@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #       
 #       Copyright 2012 Anne Archibald <peridot.faceted@gmail.com>
@@ -21,6 +20,7 @@
 # 
 import os
 import ConfigParser
+import sys
 
 
 USERDIR = os.path.expanduser( os.path.join( '~' , 'dmeternal' ) )
@@ -28,7 +28,11 @@ if not os.path.exists( USERDIR ):
     os.mkdir( USERDIR )
 
 def game_dir(fname=""):
-    return os.path.join(os.path.dirname(__file__),fname)
+	if getattr( sys, 'frozen', False ):
+		# if in bundle
+		return os.path.join(os.path.dirname(sys.executable), fname)
+	# if regular python
+	return os.path.join(os.path.dirname(__file__),fname)
 def image_dir(fname=""):
     return os.path.join(game_dir('image'),fname)
 def data_dir(fname=""):
@@ -38,6 +42,7 @@ def user_dir( fname=""):
 
 # Load the configuration file.
 config = ConfigParser.SafeConfigParser()
+
 with open(data_dir("config_defaults.cfg")) as f:
     config.readfp( f )
 if not config.read( [user_dir( "config.cfg" )] ):

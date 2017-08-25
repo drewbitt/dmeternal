@@ -24,6 +24,8 @@ import itertools
 import random
 import locale
 import util
+import sys
+import os
 
 class NameGen:
 	"""

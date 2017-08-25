@@ -1,5 +1,3 @@
-#!/usr/bin/python2
-
 import game
 
 def play_the_game():
@@ -7,4 +5,3 @@ def play_the_game():
 
 if __name__=='__main__':
     play_the_game()
-
