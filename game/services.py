@@ -1,35 +1,42 @@
-import spells
-import charsheet
-import pygame
-import items
+''' Services - Manages the shop, inn, job training, spell managing, and the temple
+
+Manages selling/buying items, learning/discarding spells, staying in the inn, choosing a job, and
+resurrection/restoration/curing posion/removing a curse in the temple'''
+
 import random
 import copy
+import pygame
+import spells
+import charsheet
+import items
 import pfov
 import enchantments
 import stats
 
 GENERAL_STORE = ( items.SWORD, items.AXE, items.MACE, items.DAGGER, items.STAFF,
-    items.BOW, items.POLEARM, items.ARROW, items.SHIELD, items.SLING, items.BULLET,
-    items.CLOTHES, items.LIGHT_ARMOR, items.HEAVY_ARMOR, items.HAT, items.HELM,
-    items.GLOVE, items.GAUNTLET, items.SANDALS, items.SHOES, items.BOOTS,
-    items.CLOAK, items.FARMTOOL )
+                  items.BOW, items.POLEARM, items.ARROW, items.SHIELD, items.SLING, items.BULLET,
+                  items.CLOTHES, items.LIGHT_ARMOR, items.HEAVY_ARMOR, items.HAT, items.HELM,
+                  items.GLOVE, items.GAUNTLET, items.SANDALS, items.SHOES, items.BOOTS,
+                  items.CLOAK, items.FARMTOOL )
 
 MINIMAL_STORE = ( items.SCROLL, items.POTION, items.CLOTHES, items.LIGHT_ARMOR,
-    items.HEAVY_ARMOR, items.ARROW, items.BULLET )
+                  items.HEAVY_ARMOR, items.ARROW, items.BULLET )
 
 ARMOR_STORE = ( items.SHIELD, items.CLOTHES, items.LIGHT_ARMOR, items.HEAVY_ARMOR,
-    items.HAT, items.HELM, items.GLOVE, items.GAUNTLET, items.SANDALS, items.SHOES,
-    items.BOOTS, items.CLOAK )
+                items.HAT, items.HELM, items.GLOVE, items.GAUNTLET, items.SANDALS, items.SHOES,
+                items.BOOTS, items.CLOAK )
 
 WEAPON_STORE = ( items.SWORD, items.AXE, items.MACE, items.DAGGER, items.STAFF,
-    items.BOW, items.POLEARM, items.ARROW, items.SLING, items.BULLET,
-    items.FARMTOOL, items.LANCE )
+                 items.BOW, items.POLEARM, items.ARROW, items.SLING, items.BULLET,
+                 items.FARMTOOL, items.LANCE )
 
-MAGIC_STORE = ( items.SCROLL, items.SCROLL, items.SCROLL, items.SCROLL, items.SCROLL, 
-    items.POTION, items.HOLYSYMBOL, items.WAND )
+MAGIC_STORE = ( items.SCROLL, items.SCROLL, items.SCROLL, items.SCROLL, items.SCROLL,
+                items.POTION, items.HOLYSYMBOL, items.WAND )
 
 class Shop( object ):
-    def __init__( self, ware_types = GENERAL_STORE, allow_misc=True, enhance_at=20, caption="Shop", magic_chance=5, rank=3, num_items=25, turnover=1, npc=None ):
+    ''' Manages inventory/wares, identifying items, buying/selling, & the menu for the shop '''
+    def __init__( self, ware_types = GENERAL_STORE, allow_misc=True, enhance_at=20,
+                  caption="Shop", magic_chance=5, rank=3, num_items=25, turnover=1, npc=None ):
         self.wares = list()
         self.ware_types = ware_types
         self.allow_misc = allow_misc
@@ -41,8 +48,13 @@ class Shop( object ):
         self.turnover = turnover
         self.last_updated = -1
         self.npc = npc
+        # .pc and .charsheets defined by __call__, vars are very often updated in other methods
+        # __call__ method is called when the instance is called
+        self.pc = None
+        self.charsheets = None
 
     def generate_item( self, itype, rank, magic_chance ):
+        ''' Generates items, where there is a small possibility of generating a magic item '''
         it = None
         tries = 0
         while ( tries < 10 ) and not it:
@@ -55,9 +67,8 @@ class Shop( object ):
         return it
 
     def update_wares( self, explo ):
-        # Once a day the wares get updated. Delete some items, make sure that
-        # there's at least one item of every ware_type, and then fill up the
-        # store to full capacity.
+        ''' Once a day wares gets updated - deletes items, makes sure there's one of each ware_type,
+        and then fills the store up to capacity. Shopkeeper friendliness important'''
 
         # A lot of stuff about the wares is going to depend on the shopkeeper's
         # friendliness.
@@ -80,7 +91,7 @@ class Shop( object ):
             self.wares.remove( it )
         if explo:
             days = explo.camp.day - self.last_updated
-            for n in range( max( 3, ( random.randint(1,6) + days ) * self.turnover )):
+            for _ in range( max( 3, ( random.randint(1,6) + days ) * self.turnover )):
                 if self.wares:
                     it = random.choice( self.wares )
                     self.wares.remove( it )
@@ -96,7 +107,7 @@ class Shop( object ):
         elif friendliness > -20 and explo:
             rank = max( rank, ( rank + explo.camp.party_rank() ) // 2 )
 
-        # Generate one of each type of item this shop stocks first.        
+        # Generate one of each type of item this shop stocks first.
         needed_wares = list( self.ware_types )
         for i in self.wares:
             if i.itemtype in needed_wares:
@@ -124,6 +135,7 @@ class Shop( object ):
 
 
     def make_wares_menu( self, explo, myredraw ):
+        '''Returns menu for display when making wares'''
         mymenu = charsheet.RightMenu( explo.screen, predraw = myredraw )
 
         for s in self.wares:
@@ -144,7 +156,7 @@ class Shop( object ):
         return mymenu
 
     def improve_friendliness( self, explo, item, modifier=0 ):
-        """Dealing with a shopkeeper will generally increase friendliness."""
+        '''Dealing with a shopkeeper will generally increase friendliness.'''
         if self.npc:
             target = abs( self.npc.get_friendliness( explo.camp ) ) + 50 - 5 * item.min_rank()
             roll = random.randint( 1, 100 ) + explo.camp.party_spokesperson().get_stat_bonus( stats.CHARISMA ) + modifier
@@ -152,7 +164,7 @@ class Shop( object ):
                 self.npc.friendliness += ( roll - target + 9 ) // 10
 
     def calc_purchase_price( self, explo, item ):
-        """The sale price of an item depends on friendliness."""
+        '''The sale price of an item depends on friendliness.'''
         it = item.cost()
         if self.npc:
             f = self.npc.get_friendliness( explo.camp )
@@ -164,7 +176,13 @@ class Shop( object ):
 
     LIMITED_QUANTITY_ITEMS = (items.SCROLL,items.POTION,items.GEM)
 
+    # NOTE ------------
+    # MYMENU.QUERY()
+    # query returning False means selection was cancelled.
+    # -----------------
+
     def buy_items( self, explo ):
+        '''Buy items. Remove gold. Add to inventory. If item is enhanced, get that one, otherwise youre buying a copy'''
         keep_going = True
         myredraw = charsheet.CharacterViewRedrawer( csheet=self.charsheets[self.pc], screen=explo.screen, predraw=explo.view, caption="Buy Items" )
         last_selected = 0
@@ -174,11 +192,11 @@ class Shop( object ):
             mymenu.set_item_by_position( last_selected )
             it = mymenu.query()
             last_selected = mymenu.selected_item
-            if it is -1:
+            if it == -1:
                 n = ( explo.camp.party.index(self.pc) + len( explo.camp.party ) - 1 ) % len( explo.camp.party )
                 self.pc = explo.camp.party[n]
                 myredraw.csheet = self.charsheets[self.pc]
-            elif it is 1:
+            elif it == 1:
                 n = ( explo.camp.party.index(self.pc) + 1 ) % len( explo.camp.party )
                 self.pc = explo.camp.party[n]
                 myredraw.csheet = self.charsheets[self.pc]
@@ -210,16 +228,18 @@ class Shop( object ):
             else:
                 keep_going = False
 
-    def sale_price( self, it ):
+    @staticmethod
+    def sale_price( it ):
+        '''If item identified, return price to sell by including enhancements; else, just price to sell'''
         if it.identified:
             return max( it.cost() // 2, 1 )
-        else:
-            return max( it.cost(include_enhancement=False) // 2, 1 )
+        return max( it.cost(include_enhancement=False) // 2, 1 )
 
     def sell_items( self, explo ):
+        ''' Sell items. Get gold. Don't get more money from identified enhanced weapons. Maybe add as feature? '''
         keep_going = True
         myredraw = charsheet.CharacterViewRedrawer( csheet=self.charsheets[self.pc], screen=explo.screen, predraw=explo.view, caption="Sell Items" )
-        last_item = 1;
+        last_item = 1
 
         while keep_going:
             mymenu = charsheet.RightMenu( explo.screen, predraw = myredraw )
@@ -242,11 +262,11 @@ class Shop( object ):
 
             it = mymenu.query()
             last_item = mymenu.selected_item
-            if it is -1:
+            if it == -1:
                 n = ( explo.camp.party.index(self.pc) + len( explo.camp.party ) - 1 ) % len( explo.camp.party )
                 self.pc = explo.camp.party[n]
                 myredraw.csheet = self.charsheets[self.pc]
-            elif it is 1:
+            elif it == 1:
                 n = ( explo.camp.party.index(self.pc) + 1 ) % len( explo.camp.party )
                 self.pc = explo.camp.party[n]
                 myredraw.csheet = self.charsheets[self.pc]
@@ -269,6 +289,7 @@ class Shop( object ):
     IDENTIFY_PRICE = 50
 
     def identify_items( self, explo ):
+        ''' Identify items to see their true nature. Enhanced items are more expensive when buying, not selling atm'''
         keep_going = True
         myredraw = charsheet.CharacterViewRedrawer( csheet=self.charsheets[self.pc], screen=explo.screen, predraw=explo.view, caption="Identify Items" )
 
@@ -291,11 +312,11 @@ class Shop( object ):
             mymenu.quick_keys[ pygame.K_RIGHT ] = 1
 
             it = mymenu.query()
-            if it is -1:
+            if it == -1:
                 n = ( explo.camp.party.index(self.pc) + len( explo.camp.party ) - 1 ) % len( explo.camp.party )
                 self.pc = explo.camp.party[n]
                 myredraw.csheet = self.charsheets[self.pc]
-            elif it is 1:
+            elif it == 1:
                 n = ( explo.camp.party.index(self.pc) + 1 ) % len( explo.camp.party )
                 self.pc = explo.camp.party[n]
                 myredraw.csheet = self.charsheets[self.pc]
@@ -312,7 +333,7 @@ class Shop( object ):
 
 
     def enter_shop( self, explo ):
-        """Find out what the PC wants to do."""
+        '''Find out what the PC wants to do.'''
         keep_going = True
         myredraw = charsheet.CharacterViewRedrawer( csheet=self.charsheets[self.pc], screen=explo.screen, predraw=explo.view, caption=self.caption )
 
@@ -328,11 +349,11 @@ class Shop( object ):
 
         while keep_going:
             it = mymenu.query()
-            if it is -1:
+            if it == -1:
                 n = ( explo.camp.party.index(self.pc) + len( explo.camp.party ) - 1 ) % len( explo.camp.party )
                 self.pc = explo.camp.party[n]
                 myredraw.csheet = self.charsheets[self.pc]
-            elif it is 1:
+            elif it == 1:
                 n = ( explo.camp.party.index(self.pc) + 1 ) % len( explo.camp.party )
                 self.pc = explo.camp.party[n]
                 myredraw.csheet = self.charsheets[self.pc]
@@ -378,11 +399,16 @@ class Shop( object ):
 
 
 class SpellManager( object ):
+    ''' Methods for learning/discarding spells, menu for library/spells'''
     def __init__( self, spell_list = None, caption="Manage Spells" ):
         self.spell_list = spell_list
         self.caption = caption
+        # pc, charsheets defined in __call__
+        self.pc = None
+        self.charsheets = None
 
     def learn_spell( self, explo ):
+        ''' Learn spell chosen from menu, adds that spell to your pcs techniques'''
         keep_going = True
         myredraw = charsheet.CharacterViewRedrawer( csheet=self.charsheets[ self.pc ], screen=explo.screen, predraw=explo.view, caption="Learn New Spell" )
 
@@ -402,11 +428,11 @@ class SpellManager( object ):
             mymenu.quick_keys[ pygame.K_RIGHT ] = 1
 
             it = mymenu.query()
-            if it is -1:
+            if it == -1:
                 n = ( explo.camp.party.index(self.pc) + len( explo.camp.party ) - 1 ) % len( explo.camp.party )
                 self.pc = explo.camp.party[n]
                 myredraw.csheet = self.charsheets[ self.pc ]
-            elif it is 1:
+            elif it == 1:
                 n = ( explo.camp.party.index(self.pc) + 1 ) % len( explo.camp.party )
                 self.pc = explo.camp.party[n]
                 myredraw.csheet = self.charsheets[ self.pc ]
@@ -417,6 +443,7 @@ class SpellManager( object ):
                 keep_going = False
 
     def discard_spell( self, explo ):
+        ''' Removes spell/technique from pc from menu choice '''
         keep_going = True
         myredraw = charsheet.CharacterViewRedrawer( csheet=self.charsheets[ self.pc ], screen=explo.screen, predraw=explo.view, caption="Discard Known Spell" )
 
@@ -433,11 +460,11 @@ class SpellManager( object ):
             mymenu.quick_keys[ pygame.K_RIGHT ] = 1
 
             it = mymenu.query()
-            if it is -1:
+            if it == -1:
                 n = ( explo.camp.party.index(self.pc) + len( explo.camp.party ) - 1 ) % len( explo.camp.party )
                 self.pc = explo.camp.party[n]
                 myredraw.csheet = self.charsheets[ self.pc ]
-            elif it is 1:
+            elif it == 1:
                 n = ( explo.camp.party.index(self.pc) + 1 ) % len( explo.camp.party )
                 self.pc = explo.camp.party[n]
                 myredraw.csheet = self.charsheets[ self.pc ]
@@ -448,7 +475,7 @@ class SpellManager( object ):
                 keep_going = False
 
     def enter_library( self, explo ):
-        """Find out what the PC wants to do."""
+        '''Find out what the PC wants to do when entering library - shows menu'''
         keep_going = True
         myredraw = charsheet.CharacterViewRedrawer( csheet=self.charsheets[ self.pc ], screen=explo.screen, predraw=explo.view, caption=self.caption )
 
@@ -463,11 +490,11 @@ class SpellManager( object ):
 
         while keep_going:
             it = mymenu.query()
-            if it is -1:
+            if it == -1:
                 n = ( explo.camp.party.index(self.pc) + len( explo.camp.party ) - 1 ) % len( explo.camp.party )
                 self.pc = explo.camp.party[n]
                 myredraw.csheet = self.charsheets[ self.pc ]
-            elif it is 1:
+            elif it == 1:
                 n = ( explo.camp.party.index(self.pc) + 1 ) % len( explo.camp.party )
                 self.pc = explo.camp.party[n]
                 myredraw.csheet = self.charsheets[ self.pc ]
@@ -479,6 +506,7 @@ class SpellManager( object ):
                 keep_going = False
 
     def browse_spells( self, explo ):
+        '''Browse shops spells'''
         keep_going = True
         myredraw = charsheet.CharacterViewRedrawer( csheet=self.charsheets[ self.pc ], screen=explo.screen, predraw=explo.view, caption="Browse Library" )
 
@@ -494,11 +522,11 @@ class SpellManager( object ):
             mymenu.quick_keys[ pygame.K_RIGHT ] = 1
 
             it = mymenu.query()
-            if it is -1:
+            if it == -1:
                 n = ( explo.camp.party.index(self.pc) + len( explo.camp.party ) - 1 ) % len( explo.camp.party )
                 self.pc = explo.camp.party[n]
                 myredraw.csheet = self.charsheets[ self.pc ]
-            elif it is 1:
+            elif it == 1:
                 n = ( explo.camp.party.index(self.pc) + 1 ) % len( explo.camp.party )
                 self.pc = explo.camp.party[n]
                 myredraw.csheet = self.charsheets[ self.pc ]
@@ -537,8 +565,8 @@ class SpellManager( object ):
 
         del self.charsheets
 
-
-class Inn( object ):
+class Inn( object ):    #pylint: disable=R0903
+    '''Could be a method but currently is a class. Just the menu for the inn, rests you, removes gold'''
     def __init__( self, cost_per_night = 20, caption="Inn" ):
         self.cost_per_night = cost_per_night
         self.caption = caption
@@ -564,10 +592,14 @@ class Inn( object ):
                 explo.alert( "You can't afford to stay here! Come back when you've earned some money." )
 
 class JobTraining( object ):
-    def __init__( self, jobs = list() ):
+    ''' Menu/methods for choosing a job'''
+    def __init__( self, jobs = None):   # changing from jobs = list() default to None, may break some things but list() not safe
         self.jobs = jobs
+        # pc, charsheets defined in __call__
+        self.pc = None
+        self.charsheets = None
     def can_take_at_least_one_job( self, pc ):
-        # Return True if this PC can take at least one of the jobs on offer.
+        '''Return True if this PC can take at least one of the jobs on offer.'''
         ok = False
         for j in self.jobs:
             if j.can_take_level( pc ):
@@ -575,11 +607,13 @@ class JobTraining( object ):
                 break
         return ok
     def choose_job( self, explo ):
+        ''' Choose job. Simple check for your level / job level '''
         myredraw = charsheet.CharacterViewRedrawer( csheet=self.charsheets[ self.pc ], screen=explo.screen, predraw=explo.view, caption="What job will {0} learn?".format(self.pc) )
         mymenu = charsheet.RightMenu( explo.screen, predraw = myredraw, add_desc=False )
 
         for j in self.jobs:
             if j.can_take_level( self.pc ):
+                # if you can even take the job because of level
                 mymenu.add_item( j.name, j )
         mymenu.sort()
         mymenu.add_alpha_keys()
@@ -621,8 +655,9 @@ class JobTraining( object ):
         del self.charsheets
 
 class Temple( object ):
+    ''' Temple class for healing, resurrecting, etc. Includes menus. '''
     def __init__( self, cost_for_resurrection = 250, cost_for_restoration=25, cost_for_curepoison=15, cost_for_removecurse=50, caption="Temple",
-      desc = "Welcome to the temple. What prayers are you in need of?" ):
+                  desc = "Welcome to the temple. What prayers are you in need of?" ):
         self.cost_for_resurrection = cost_for_resurrection
         self.cost_for_restoration = cost_for_restoration
         self.cost_for_curepoison = cost_for_curepoison
@@ -631,19 +666,24 @@ class Temple( object ):
         self.desc = desc
 
     def resurrection_cost( self, pc ):
+        ''' Returns resurrection cost depending on rank '''
         return pc.rank() * self.cost_for_resurrection
 
     def restoration_cost( self, pc ):
+        ''' Returns restoration cost depending on rank '''
         return pc.rank() * self.cost_for_restoration
 
     def cure_poison_cost( self, pc ):
+        ''' Returns posion cost depending on rank '''
         return pc.rank() * self.cost_for_curepoison
 
     def remove_curse_cost( self, pc ):
+        ''' Returns curse cost depending on rank '''
         return pc.rank() * self.cost_for_removecurse
 
     @staticmethod
     def get_return_pos( explo ):
+        ''' Returns (x,y) of the position of the first living pc. Adjusts entry points. '''
         x0,y0 = explo.camp.first_living_pc().pos
         dist = 3
         while dist <= 12:
@@ -658,6 +698,7 @@ class Temple( object ):
 
 
     def resurrection( self, explo ):
+        ''' Removes pcs conditions and returns them from the graveyard '''
         charsheets = dict()
         for pc in explo.camp.party:
             charsheets[ pc ] = charsheet.CharacterSheet( pc , screen=explo.screen, camp=explo.camp )
@@ -701,6 +742,7 @@ class Temple( object ):
                 break
 
     def restoration( self, explo ):
+        ''' Heals all players for gold '''
         charsheets = dict()
         for pc in explo.camp.party:
             charsheets[ pc ] = charsheet.CharacterSheet( pc , screen=explo.screen, camp=explo.camp )
@@ -728,6 +770,7 @@ class Temple( object ):
                 break
 
     def cure_poison( self, explo ):
+        ''' Cures posion status on all pcs for gold '''
         charsheets = dict()
         for pc in explo.camp.party:
             charsheets[ pc ] = charsheet.CharacterSheet( pc , screen=explo.screen, camp=explo.camp )
@@ -756,6 +799,7 @@ class Temple( object ):
                 break
 
     def remove_curse( self, explo ):
+        ''' Lifts curse on all pc for gold '''
         charsheets = dict()
         for pc in explo.camp.party:
             charsheets[ pc ] = charsheet.CharacterSheet( pc , screen=explo.screen, camp=explo.camp )
@@ -811,8 +855,6 @@ if __name__=='__main__':
     import cProfile
 
     myshop = Shop(ware_types=MAGIC_STORE,magic_chance=25)
-    def testitem():
+    def testitem(): #pylint: disable=C0111
         myshop.generate_item(random.choice(GENERAL_STORE),5,20)
     cProfile.run( "myshop.update_wares(None)" )
-
-
