@@ -1,37 +1,34 @@
-# -*- coding: utf-8 -*-
-#       
+''' -*- coding: utf-8 -*-
+#
 #       Copyright 2013 Joeph Hewitt <pyrrho12@yahoo.ca>
-#       
+#
 #       This program is free software; you can redistribute it and/or modify
 #       it under the terms of the GNU General Public License as published by
 #       the Free Software Foundation; either version 2 of the License, or
 #       (at your option) any later version.
-#       
+#
 #       This program is distributed in the hope that it will be useful,
 #       but WITHOUT ANY WARRANTY; without even the implied warranty of
 #       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #       GNU General Public License for more details.
-#       
+#
 #       You should have received a copy of the GNU General Public License
 #       along with this program; if not, write to the Free Software
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
-#       
-# 
-import util
-import charsheet
+#
+'''
+import random
 import glob
 import cPickle
+import util
+import charsheet
 import stats
 import combat
-import context
-import random
-import waypoints
 import pfov
 import exploration
 import pygwrap
 import enchantments
-import collections
 import container
 import maps
 import spells
@@ -42,7 +39,7 @@ import narrator
 
 
 class Campaign( object ):
-    """A general holder for all the stuff that goes into a DME campaign."""
+    '''A general holder for all the stuff that goes into a DME campaign.'''
     party_size = 4
     def __init__( self, name = "BobDwarf19", scene=None, entrance=None, xp_scale = 0.65 ):
         self.name = name
@@ -60,21 +57,26 @@ class Campaign( object ):
         self.xp_scale = xp_scale
 
     def add_party( self, party ):
-        """Add the party, give them random spells, fill the known spell list."""
+        '''Add the party, give them random spells, fill the known spell list.'''
         self.party = party
         # Set spells
         has_color = [False,False,False,False,False,False]
         for pc in self.party:
+            # pc is a character object
             for t in spells.COLORS:
+                # spells.COLORS = (SOLAR, EARTH, WATER, FIRE, AIR, LUNAR)
                 if pc.spell_gems_of_color(t):
+                    # Returns the total number of spell gems posessed. True if has some
                     has_color[t] = True
         candidates = list()
         for spell in spells.SPELL_LIST:
             s_ok = True
             for k in spell.gems.iterkeys():
+                # returns iterator over gems dictionary. each spell obj has .gems dict
                 if not has_color[k]:
                     s_ok = False
             if s_ok:
+                # if character has color of gem
                 if spell.rank == 1:
                     self.known_spells.append( spell )
                 elif spell.rank == 2:
@@ -89,7 +91,7 @@ class Campaign( object ):
         self.update_library()
 
     def first_living_pc( self ):
-        """Return the first living PC in the party."""
+        '''Return the first living PC in the party.'''
         flp = None
         for pc in self.party:
             if pc.is_alright():
@@ -98,7 +100,7 @@ class Campaign( object ):
         return flp
 
     def num_pcs( self ):
-        """Return the number of living PCs in the party."""
+        '''Return the number of living PCs in the party.'''
         total = 0
         for pc in self.party:
             if pc.is_alright():
@@ -106,11 +108,12 @@ class Campaign( object ):
         return total
 
     def party_rank( self ):
+        '''Returns average rank for all party members combined'''
         total = sum( pc.rank() for pc in self.party )
         return total//self.party_size
 
     def party_spokesperson( self ):
-        """Return the PC with the highest charisma."""
+        '''Return the PC with the highest charisma.'''
         flp = None
         best = -999
         for pc in self.party:
@@ -120,6 +123,7 @@ class Campaign( object ):
         return flp
 
     def party_stat( self, ps_skill, ps_bonus=None ):
+        '''Returns best stat of all party members for a certain skill'''
         best = 0
         for p in self.party:
             pscore = p.get_stat( ps_skill ) + p.get_stat_bonus( ps_bonus )
@@ -128,20 +132,21 @@ class Campaign( object ):
         return best
 
     def save( self, screen=None ):
+        '''Saves game to .sav file using cPickle'''
         if screen:
             pygwrap.please_stand_by( screen, "Saving..." )
         with open( util.user_dir( "rpg_" + self.name + ".sav" ) , "wb" ) as f:
             cPickle.dump( self , f, -1 )
 
     def activate_monster( self, mon ):
-        """Prepare this monster for combat."""
+        '''Prepare this monster for combat.'''
         if self.fight:
             self.fight.activate_monster( mon )
         else:
             self.fight = combat.Combat( self, mon )
 
     def place_party( self ):
-        """Stick the party close to the waypoint."""
+        '''Stick the party close to the waypoint. Random entry point from options of certain distance'''
         x0,y0 = self.entrance.pos
         entry_points = list( pfov.WalkReach( self.scene, x0, y0, 3, True ).tiles )
         for m in self.scene.contents:
@@ -159,13 +164,14 @@ class Campaign( object ):
                 pfov.PCPointOfView( self.scene, pos[0], pos[1], 15 )
 
     def remove_party_from_scene( self ):
+        '''If any of your pcs are in the scene, remove them'''
         for pc in self.party:
             pc.pos = None
             if pc in self.scene.contents:
                 self.scene.contents.remove( pc )
 
     def rest( self, max_restore=1.0 ):
-        """Increment the day counter, restore hp and mp."""
+        '''Increment the day counter, restore hp and mp.'''
         self.day += 1
         self.scene.last_updated = self.day
         for pc in self.party:
@@ -175,18 +181,24 @@ class Campaign( object ):
             pc.holy_signs_used = 0
             pc.condition.tidy( enchantments.DAILY )
     def check_adventurers_guild( self, screen ):
+        ''' look at TheAdventurersGuild in citybits.py
+        # if has guild attr and everyone is dead, move to adventurers guild (game restarts)
+        '''
         if hasattr(self,"mru_advguild") and not self.first_living_pc():
             for pc in list(self.party):
                 self.party.remove( pc )
                 self.graveyard.append( pc )
             self.destination,self.entrance = self.mru_advguild
-            self.entrance.no_explo_use(self,screen)
+            # campaign has no mru_advguild member so no idea how this runs^
+            self.entrance.no_explo_use(self,screen)     # goes to camp. this is where game restarts.
             if self.first_living_pc():
                 self.scene, self.destination = self.destination, None
                 self.place_party()
     def play( self, screen ):
+        ''' plays the game! main method
         # If the campaign is loaded without a valid party, and there's an
-        # adventurer's guild around, try to load a party.
+        # adventurer's guild around, try to load a party. '''
+
         self.check_adventurers_guild(screen)
         while self.first_living_pc() and not pygwrap.GOT_QUIT:
             exp = exploration.Explorer( screen, self )
@@ -203,6 +215,7 @@ class Campaign( object ):
                 break
 
     def active_plots( self ):
+        ''' yields active plots either in scene scripts or campagin.scripts'''
         for p in self.scene.scripts:
             if p.active:
                 yield p
@@ -211,24 +224,25 @@ class Campaign( object ):
                 yield p
 
     def current_root_scene( self ):
-        # Return the city where the action's currently taking place.
+        ''' Return the city where the action's currently taking place.'''
         s = self.scene
         while hasattr( s, "parent_scene" ) and isinstance( s.parent_scene, maps.Scene ):
             s = s.parent_scene
         return s
 
     def current_world( self ):
-        # Return the world where the action's currently taking place.
+        ''' Return the world where the action's currently taking place.'''
         s = self.current_root_scene()
         if hasattr( s, "world_map_pos" ):
             return s.world_map_pos.parent_world
 
     def dump_info( self ):
-        # Print info on all scenes in this world.
+        ''' Print info on all scenes in this world.'''
         for c in self.contents:
             c.dump_info()
 
     def add_story( self, adv_type="" ):
+        ''' adds story to current plot state, builds the narrative'''
         init = narrator.plots.PlotState(rank=self.party_rank())
         nart = narrator.Narrative( self, init, adv_type=adv_type, start_rank=init.rank, end_rank=init.rank+1 )
         if nart.story:
@@ -236,20 +250,22 @@ class Campaign( object ):
             return nart.story
 
     def library_has_spell( self, nuspell ):
-        # Return True if the library already has this spell.
+        ''' Return True if the library already has this spell. '''
         return any( nuspell.name == t.name for t in self.known_spells )
 
     def update_library( self ):
+        ''' for each player in party, for each technique of player,
+        if spell not in library then add spell to known spells '''
         for pc in self.party:
             for s in pc.techniques:
                 if isinstance( s, spells.Spell ) and not self.library_has_spell( s ):
                     self.known_spells.append( s )
 
-
-
 def browse_pcs( screen ):
-    # Look at the previously created characters.
-    # Start by loading all characters from disk.
+    ''' Look at the previously created characters.
+    Start by loading all characters from disk.
+    '''
+
     file_list = glob.glob( util.user_dir( "c_*.sav" ) )
     pc_list = []
     charsheets = dict()
@@ -260,6 +276,7 @@ def browse_pcs( screen ):
             pc_list.append( pc )
             charsheets[ pc ] = charsheet.CharacterSheet( pc , screen=screen )
     if pc_list:
+        # adds party members to charsheet
         psr = charsheet.PartySelectRedrawer( charsheets=charsheets, screen=screen, caption="Browse Characters" )
         rpm = charsheet.RightMenu( screen, predraw=psr, add_desc=False )
         psr.menu = rpm
@@ -268,17 +285,18 @@ def browse_pcs( screen ):
         rpm.sort()
         pc = rpm.query()
 
-class random_party( list ):
-    """Create a random party of adventurers."""
+class Random_party( list ):
+    '''Create a random party of adventurers.'''
     FIGHTERS = ( characters.Warrior, characters.Samurai, characters.Knight,
-     characters.Monk, characters.Warrior, characters.Knight,
-     characters.Warrior, characters.Warrior, characters.Warrior,
-     characters.Samurai, characters.Knight )
+                 characters.Monk, characters.Warrior, characters.Knight,
+                 characters.Warrior, characters.Warrior, characters.Warrior,
+                 characters.Samurai, characters.Knight )
     THIEVES = ( characters.Thief, characters.Ninja, characters.Bard, characters.Ranger,
-     characters.Thief, characters.Bard, characters.Ranger )
+                characters.Thief, characters.Bard, characters.Ranger )
     PRIESTS = ( characters.Priest, characters.Druid, characters.Priest )
     MAGES = ( characters.Mage, characters.Necromancer, characters.Mage )
     def __init__( self ):
+        '''chooses a random fighter, thief, priest, mage from class variable list'''
         list.__init__(self, [] )
         self.append( self.create_pc( random.choice( self.FIGHTERS ) ) )
         self.append( self.create_pc( random.choice( self.THIEVES ) ) )
@@ -286,10 +304,11 @@ class random_party( list ):
         self.append( self.create_pc( random.choice( self.MAGES ) ) )
 
     def create_pc( self, job ):
-        """Create a PC with the given job."""
+        '''Create a PC with the given job. Gives them random species, gender.
+        Returns best char of 5 attempts at random generation'''
         oldpc = None
         # Munchkins can change the number "5" to something obscene.
-        for t in xrange( 5 ):
+        for _ in xrange( 5 ):
             species = random.choice( characters.PC_SPECIES )
             gender = random.randint(0,1)
             newpc = characters.Character( species=species(), gender=gender )
@@ -307,16 +326,13 @@ class random_party( list ):
         return oldpc
 
     def newpc_is_better( self, newpc, oldpc ):
+        '''returns True if stats of newpc is better than oldpc stats'''
         if oldpc:
             return self.rate_stats( newpc ) > self.rate_stats( oldpc )
-        else:
-            return True
+        return True
     def rate_stats( self, canpc ):
-        """Return a score rating the statistics of this candidate PC."""
+        '''Return a score rating the statistics of this candidate PC.'''
         total = 0
         for s in stats.PRIMARY_STATS:
             total += canpc.get_stat( s ) * ( 2 + canpc.mr_level.requirements.get( s, 0 ) )
         return total
-
-
-

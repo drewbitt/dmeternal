@@ -72,7 +72,7 @@ def choose_characters( screen ):
     if rpm.query():
         return charloader.load_characters( list(), screen )
     else:
-        return campaign.random_party()
+        return campaign.Random_party()
 
 def start_campaign( init, screen ):
     pygwrap.please_stand_by( screen, "Building world..." )
