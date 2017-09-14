@@ -1117,6 +1117,7 @@ class Explorer( object ):
                 elif gdi.type == pygame.QUIT:
                     self.camp.save(self.screen)
                     self.no_quit = False
+                # if left mouse button is clicked, move characters to spot. if right button clicked, show pop-up menu
                 elif gdi.type == pygame.MOUSEBUTTONUP:
                     if gdi.button == 1:
                         # Left mouse button.
@@ -1125,6 +1126,6 @@ class Explorer( object ):
                             self.view.overlays.clear()
                         else:
                             self.pick_up( self.view.mouse_tile )
-                    else:
+                    elif gdi.button == 3:
                         self.pop_explo_menu()
 
