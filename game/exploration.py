@@ -1,7 +1,11 @@
+
+import random
 import pfov
+import maps
 import pygwrap
 import pygame
 import charsheet
+import context
 import items
 import dialogue
 import animobs
@@ -60,7 +64,7 @@ class MoveTo( object ):
         self.step += 1
 
         if (not pc) or ( self.dest == pc.pos ) or ( self.step >
-         len(self.path.results) ) or not exp.scene.on_the_map( *self.dest ):
+         len(self.path.results) ) or not exp.scene.on_the_map( *self.dest ):    # pylint: disable=C0330
             return False
         else:
             first = True
@@ -273,6 +277,9 @@ class Explorer( object ):
         self.safe_camp_bonus = 0
 
         self.record_anim = False
+        self.no_quit = True
+        self.order = None   # think this is used for MoveTo and is none unless moving
+        self.bumper = None
 
         # Update the view of all party members.
         for pc in camp.party:
@@ -548,11 +555,10 @@ class Explorer( object ):
         conversation = dialogue.build_conversation( cue , offers )
         coff = conversation
 
-        self.convo = (pc,npc,conversation)
+        self.convo = (pc,npc,conversation)  # pylint: disable=W0201
 
         pc_voice = pc.get_voice()
         npc_voice = npc.get_voice()
-
 
         while coff:
             crd.friendliness = npc.get_friendliness(self.camp)
@@ -600,15 +606,15 @@ class Explorer( object ):
                 self.scene.contents.append( it )
             self.view.regenerate_avatars( self.camp.party )
 
-    def equip_item( self, it, pc, redraw ):
+    def equip_item( self, it, pc ):
         pc.contents.equip( it )
         return True
 
-    def unequip_item( self, it, pc, redraw ):
+    def unequip_item( self, it, pc):
         pc.contents.unequip( it )
         return True
 
-    def drop_item( self, it, pc, redraw ):
+    def drop_item( self, it, pc):
         pc.contents.unequip( it )
         if not it.equipped:
             pc.contents.remove( it )
@@ -635,10 +641,10 @@ class Explorer( object ):
                     self.alert( "{0} can't carry any more.".format( str( opc ) ) )
         return True
 
-    def use_item( self, it, pc, myredraw ):
+    def use_item( self, it, pc):
         it.use( pc, self )
 
-    def learn_spell_from_item( self, it, pc, myredraw ):
+    def learn_spell_from_item( self, it, pc):
         self.camp.known_spells.append( it.spell )
         self.alert( "You have added {0} to your library.".format( it.spell ) )
         if hasattr( it, "quantity" ):
@@ -671,7 +677,6 @@ class Explorer( object ):
             return result
         else:
             return True
-
 
     def do_level_training( self, student ):
         myredraw = charsheet.CharacterViewRedrawer( csheet=charsheet.CharacterSheet(student, screen=self.screen, camp=self.camp), screen=self.screen, predraw=self.view, caption="Advance Rank" )
@@ -856,8 +861,8 @@ class Explorer( object ):
             for mz in self.scene.monster_zones:
                 if self.scene.monster_zone_is_empty( mz ) and random.randint(1,100) <= restock_chance:
                     NewTeam = teams.Team( default_reaction=characters.SAFELY_ENEMY, home=mz,
-                      rank=max( self.scene.rank, ( self.scene.rank + party_rank ) // 2 ),
-                      strength=100, habitat=self.scene.get_encounter_request() )
+                                        rank=max( self.scene.rank, ( self.scene.rank + party_rank ) // 2 ),
+                                        strength=100, habitat=self.scene.get_encounter_request() )
                     mlist = NewTeam.build_encounter(self.scene)
                     poslist = self.scene.find_free_points_in_rect( mz )
 
@@ -1128,4 +1133,3 @@ class Explorer( object ):
                             self.pick_up( self.view.mouse_tile )
                     elif gdi.button == 3:
                         self.pop_explo_menu()
-
