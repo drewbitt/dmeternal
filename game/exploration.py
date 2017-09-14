@@ -1,16 +1,12 @@
-import maps
 import pfov
 import pygwrap
 import pygame
-import hotmaps
 import charsheet
 import items
 import dialogue
 import animobs
 import characters
-import random
 import teams
-import combat
 import stats
 import services
 import image
@@ -960,7 +956,6 @@ class Explorer( object ):
         mymenu.add_item( "Camp and Rest", 4 )
         mymenu.add_item( "Reorder Party", 7 )
         mymenu.add_item( "Quit Game", 5 )
-        mymenu.add_item( "test", 8)
         mymenu.add_item( "Exit", False )
 
         choice = mymenu.query()
@@ -980,8 +975,6 @@ class Explorer( object ):
             self.view_party( self.camp.party.index( pc ) )
         elif choice == 7:
             self.reorder_party()
-        elif choice == 8:
-            MiniMap( self)
         elif choice in self.camp.party:
             # Picked a PC. Cast one of their spells.
             self.pop_spell_menu( choice )
