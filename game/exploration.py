@@ -936,13 +936,17 @@ class Explorer( object ):
         if choice:
             self.pc_use_technique( pc, choice, choice.exp_tar )
 
-    def pop_big_menu (self ):
+    def pop_big_menu ( self ):
         myredraw = bigmenu.ViewReDrawer ( view=bigmenu.ViewDrawer(screen=self.screen),
                                         screen = self.screen, predraw=self.view, caption="Main Menu")
         # menu stuff goes here
         mymenu = bigmenu.ActualMenu (self.screen, predraw = myredraw)
-        mymenu.add_item("HEY THIS IS A TEST", 999)
+        mymenu.add_item("HEY THIS IS A TEST OPTION", 999)
+        mymenu.add_item("HEY THIS IS A TEST OPTION 2", 777)
         myredraw.menu = mymenu
+        mymenu.add_alpha_keys()
+        f = mymenu.query()
+        print("In the main menu, you chose option {}".format(f))
 
     def pop_explo_menu( self ):
         mymenu = rpgmenu.PopUpMenu( self.screen, self.view )
