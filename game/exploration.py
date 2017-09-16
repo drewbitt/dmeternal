@@ -17,6 +17,7 @@ import image
 import rpgmenu
 import spells
 import pathfinding
+import bigmenu
 
 
 # Commands should be callable objects which take the explorer and return a value.
@@ -384,7 +385,7 @@ class Explorer( object ):
                         m.drop_everything( self.scene )
             elif hasattr( m, "mitose_me" ) and m.mitose_me:
                 self.mitose( m )
-                del( m.mitose_me )
+                del m.mitose_me
 
     def invoke_technique( self, tech, originator, area_of_effect, opening_anim = None, delay_point=None ):
         if self.camp.fight and self.camp.fight.cstat[originator].silent and isinstance( tech, spells.Spell ):
@@ -675,8 +676,7 @@ class Explorer( object ):
             myredraw.csheet.regenerate_avatar()
             self.view.regenerate_avatars( self.camp.party )
             return result
-        else:
-            return True
+        return True
 
     def do_level_training( self, student ):
         myredraw = charsheet.CharacterViewRedrawer( csheet=charsheet.CharacterSheet(student, screen=self.screen, camp=self.camp), screen=self.screen, predraw=self.view, caption="Advance Rank" )
@@ -936,6 +936,14 @@ class Explorer( object ):
         if choice:
             self.pc_use_technique( pc, choice, choice.exp_tar )
 
+    def pop_big_menu (self ):
+        myredraw = bigmenu.ViewReDrawer ( view=bigmenu.ViewDrawer(screen=self.screen),
+                                        screen = self.screen, predraw=self.view, caption="Main Menu")
+        # menu stuff goes here
+        mymenu = bigmenu.ActualMenu (self.screen, predraw = myredraw)
+        mymenu.add_item("HEY THIS IS A TEST", 999)
+        myredraw.menu = mymenu
+
     def pop_explo_menu( self ):
         mymenu = rpgmenu.PopUpMenu( self.screen, self.view )
         pc = self.scene.get_character_at_spot( self.view.mouse_tile )
@@ -1106,7 +1114,6 @@ class Explorer( object ):
                         services.SpellManager()(self)
                     elif gdi.unicode == u"h" or gdi.unicode == u"?" or gdi.key == pygame.K_F1:
                         self.alert("HELP\n ==== \n 1-4 View party member\n Q Quit and save\n c Center view\n M View map\n R Rest\n s Manage spells",False)
-
                     elif gdi.unicode == u"*":
                         for pc in self.camp.party:
                             pc.xp += 1000
@@ -1118,6 +1125,8 @@ class Explorer( object ):
                         self.camp.known_spells = spells.SPELL_LIST[:]
                     elif gdi.unicode == u"!":
                         self.flatten_world()
+                    elif gdi.unicode == "`":    # on ~ key
+                        self.pop_big_menu()
 
                 elif gdi.type == pygame.QUIT:
                     self.camp.save(self.screen)

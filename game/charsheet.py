@@ -112,8 +112,6 @@ class CharacterSheet( pygame.Rect ):
             status_dest = pygame.Rect( self.x, y, 120, self.y + self.height - y )
             pygwrap.draw_text( screen, pygwrap.SMALLFONT, ", ".join( mystatus ), status_dest, color=(240,140,0) )
 
-            
-
         # Column 2 - skills
         y = self.y + self.BODY_Y
         self.just_print( screen, self.x+self.RIGHT_COLUMN, y, "Melee:", str(self.pc.get_stat(stats.PHYSICAL_ATTACK)+self.pc.get_stat_bonus(stats.STRENGTH))+"%" )
@@ -146,6 +144,7 @@ class CharacterSheet( pygame.Rect ):
                         sv += self.pc.get_stat_bonus( s.default_bonus )
                     self.just_print( screen, self.x+self.RIGHT_COLUMN, y, s.name+":", str(sv)+"%", width=160 )
                     y += pygwrap.SMALLFONT.get_linesize()
+
 
 class PartySheet( pygame.Rect ):
     WIDTH = 320
@@ -400,9 +399,6 @@ class LeftMenu( rpgmenu.Menu ):
         super(LeftMenu, self).__init__(screen,x,y,CharacterSheet.WIDTH,CharacterSheet.HEIGHT - pygwrap.BIGFONT.get_linesize() * 2, border=border)
         self.predraw = predraw
 
-
-
-
 class RightMenu( rpgmenu.Menu ):
     # This is, obviously, the menu that appears to the right of the character sheet.
     def __init__( self, screen, charsheet = None, predraw = None, border=None, add_desc=True ):
@@ -419,4 +415,3 @@ class RightMenu( rpgmenu.Menu ):
         if not predraw:
             predraw = MenuRedrawer( border_rect = pygame.Rect( x , y-200, w, CharacterSheet.HEIGHT ), charsheet = charsheet )
         self.predraw = predraw
-

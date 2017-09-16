@@ -47,7 +47,7 @@ class Menu( pygame.Rect ):
         self.items = []
         self.top_item = 0
         self.selected_item = 0
-        self.can_cancel = True
+        self.can_cancel = True      # currently unimplemented. may be useful
         self.descbox = None
         self.quick_keys = {}
 
@@ -298,5 +298,3 @@ if __name__=='__main__':
     pygame.quit()
 
     print n
-
-

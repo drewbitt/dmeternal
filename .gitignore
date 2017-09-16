@@ -1,5 +1,9 @@
 # for pycharm
 .idea/
+# for vscode config files
+.vscode/
+# for code runner
+tempCodeRunnerFile.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
