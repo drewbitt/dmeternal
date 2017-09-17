@@ -9,13 +9,6 @@ class ViewDrawer ( pygame.Rect ):
     rpgmenu, gives us our menu.
     '''
 
-    ''' My idea:
-    I want to quit in here. I want to set settings in here, like frames per second that the settings file has.
-    Other settings can go here
-    I want a checkbox that says Dev Console. If checked, the bottom portion of this menu becomes an active
-    dev console terminal
-    '''
-
     '''Problems with current approach:
     * Would have to add items to RPGMenu, like checkboxes etc that we would want to use for settings.
         Suggestion: at least use a dev console file for that rpgmenu item, can add others
@@ -26,6 +19,9 @@ class ViewDrawer ( pygame.Rect ):
 
     # Note that the display will be larger than this, because the border is
     # drawn outside. Consider this measurement the safe area and the border the bleed.
+
+    # Can create any menu like this of any size by specifying bigmenu.ViewDrawer.HEIGHT = x
+    # before creating the ViewRedrawer/Drawer
     WIDTH = 800
     HEIGHT = 650
 
@@ -45,11 +41,12 @@ class ViewDrawer ( pygame.Rect ):
 
     def render_permanent_stuff(self, screen):
         pygwrap.default_border.render( screen , self )
-        self.just_print_example(screen, self.x + 6, self.y+10, "EYY", "")
+        self.just_print_example(screen, self.x + 6, self.y+25, "Label example", "")
+        # can also render images, logos, etc easily
 
 
 class ActualMenu (rpgmenu.Menu):
-    ''' Class that is a child of rpgmenu, meaning you can add menu items to it '''
+    ''' Class that is a child of rpgmenu, meaning you can add menu items to it. Is same size as overall menu Rect'''
     def __init__( self, screen, predraw = None, border=None, fontSize=14 ):
         x = screen.get_width() // 2 - (ViewDrawer.WIDTH / 2)
         y = screen.get_height() // 2 - ViewDrawer.HEIGHT // 2 + 40 + pygwrap.BIGFONT.get_linesize() * 2
@@ -66,6 +63,8 @@ class ViewReDrawer( object ):
         if screen and not border_rect:
             border_rect = pygame.Rect( screen.get_width()//2 + 64, screen.get_height()//2 - ViewDrawer.HEIGHT//2 + 32, ViewDrawer.WIDTH - 64, ViewDrawer.HEIGHT )
         self.rect = border_rect
+
+        # caption rectangle init
         if screen:
             self.caption_rect = pygame.Rect( screen.get_width()//2 - 240, screen.get_height()//2 - ViewDrawer.HEIGHT//2 - 46, 480, pygwrap.BIGFONT.get_linesize() )
         else:
@@ -84,7 +83,8 @@ class ViewReDrawer( object ):
         if self.view:
             self.view.render_permanent_stuff( screen )
 
+        # redraw caption rectangle
         if self.caption and self.caption_rect:
             pygwrap.default_border.render( screen , self.caption_rect )
             pygwrap.draw_text( screen, pygwrap.BIGFONT, self.caption, self.caption_rect, justify = 0 )
-        self.counter += 4
+        self.counter += 4   # for spacing out backdrop tile

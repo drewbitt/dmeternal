@@ -940,11 +940,17 @@ class Explorer( object ):
     def pop_big_menu ( self ):
         ''' Menu for Settings / Dev Console found when pressing escape '''
 
+        ''' To Do:
+            * Settings (fps, resolution, windowed/fullscreen)
+            * Dev Console either at the bottom of the menu or keybinded to the tilde key instead, utilizing bigmenu still but seperate.
+              Would still keep the big menu for settings
+        '''
+
         myredraw = bigmenu.ViewReDrawer ( view=bigmenu.ViewDrawer(screen=self.screen),
-                                        screen = self.screen, predraw=self.view, caption="Main Menu")
+                                          screen = self.screen, predraw=self.view, caption="Main Menu")
         # menu stuff goes here
         mymenu = bigmenu.ActualMenu (self.screen, predraw = myredraw, fontSize=20)
-        mymenu.add_item("Quit to Main Menu", 666)
+        mymenu.add_item("Quit to Title Screen", 666)
         mymenu.add_item("Quit to Desktop", 555)     # dmeternal is meant to be able to run on Android but this obvi wouldn't work there
         f = mymenu.query()
 
