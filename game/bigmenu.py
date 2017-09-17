@@ -19,7 +19,7 @@ class ViewDrawer ( pygame.Rect ):
     '''Problems with current approach:
     * Would have to add items to RPGMenu, like checkboxes etc that we would want to use for settings.
         Suggestion: at least use a dev console file for that rpgmenu item, can add others
-    * It is currently using mymenu.add_alpha_keys() and mymenu.query() to get the menu to stay up. That was my biggest issue.
+    * It is currently using mymenu.query() to get the menu to stay up. That was my biggest issue.
       We probably will not be needing input like a,b,c etc. like a normal menu, so need to implement this ourselves.
       Basically, a large overhaul / additions to rpgmenu is needed
     '''

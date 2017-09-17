@@ -1,5 +1,6 @@
 
 import random
+import sys
 import pfov
 import maps
 import pygwrap
@@ -943,10 +944,18 @@ class Explorer( object ):
         mymenu = bigmenu.ActualMenu (self.screen, predraw = myredraw)
         mymenu.add_item("HEY THIS IS A TEST OPTION", 999)
         mymenu.add_item("HEY THIS IS A TEST OPTION 2", 777)
-        myredraw.menu = mymenu
-        mymenu.add_alpha_keys()
+        mymenu.add_item("Quit to Main Menu", 666)
+        mymenu.add_item("Quit to desktop", 555)     # dmeternal is meant to be able to run on Android but this obvi wouldn't work there
         f = mymenu.query()
-        print("In the main menu, you chose option {}".format(f))
+
+        if f == 666:
+            self.camp.save(self.screen)
+            self.no_quit = False
+        elif f == 555:
+            self.camp.save(self.screen)
+            self.no_quit = False
+            pygame.quit()
+            sys.exit()
 
     def pop_explo_menu( self ):
         mymenu = rpgmenu.PopUpMenu( self.screen, self.view )
@@ -972,7 +981,6 @@ class Explorer( object ):
         mymenu.add_item( "Manage Spells", 3 )
         mymenu.add_item( "Camp and Rest", 4 )
         mymenu.add_item( "Reorder Party", 7 )
-        mymenu.add_item( "Quit Game", 5 )
         mymenu.add_item( "Exit", False )
 
         choice = mymenu.query()
@@ -985,9 +993,6 @@ class Explorer( object ):
             services.SpellManager()(self)
         elif choice == 4:
             self.field_camp()
-        elif choice == 5:
-            self.camp.save(self.screen)
-            self.no_quit = False
         elif choice == 6:
             self.view_party( self.camp.party.index( pc ) )
         elif choice == 7:
@@ -1129,7 +1134,7 @@ class Explorer( object ):
                         self.camp.known_spells = spells.SPELL_LIST[:]
                     elif gdi.unicode == u"!":
                         self.flatten_world()
-                    elif gdi.unicode == "`":    # on ~ key
+                    elif gdi.unicode == u"\x1b":    # on escp key
                         self.pop_big_menu()
 
                 elif gdi.type == pygame.QUIT:
