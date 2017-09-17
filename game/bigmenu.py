@@ -20,7 +20,7 @@ class ViewDrawer ( pygame.Rect ):
     * Would have to add items to RPGMenu, like checkboxes etc that we would want to use for settings.
         Suggestion: at least use a dev console file for that rpgmenu item, can add others
     * It is currently using mymenu.query() to get the menu to stay up. That was my biggest issue.
-      We probably will not be needing input like a,b,c etc. like a normal menu, so need to implement this ourselves.
+        * Pretty sure it's just becuase it loops infinitely (pauses) until input
       Basically, a large overhaul / additions to rpgmenu is needed
     '''
 
@@ -50,10 +50,10 @@ class ViewDrawer ( pygame.Rect ):
 
 class ActualMenu (rpgmenu.Menu):
     ''' Class that is a child of rpgmenu, meaning you can add menu items to it '''
-    def __init__( self, screen, predraw = None, border=None ):
+    def __init__( self, screen, predraw = None, border=None, fontSize=14 ):
         x = screen.get_width() // 2 - (ViewDrawer.WIDTH / 2)
         y = screen.get_height() // 2 - ViewDrawer.HEIGHT // 2 + 40 + pygwrap.BIGFONT.get_linesize() * 2
-        super(ActualMenu, self).__init__(screen,x,y,ViewDrawer.WIDTH,ViewDrawer.HEIGHT - pygwrap.BIGFONT.get_linesize() * 2, border=border)
+        super(ActualMenu, self).__init__(screen,x,y,ViewDrawer.WIDTH,ViewDrawer.HEIGHT - pygwrap.BIGFONT.get_linesize() * 2, border=border, fontSize=fontSize)
         self.predraw = predraw
 
 class ViewReDrawer( object ):

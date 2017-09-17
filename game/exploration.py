@@ -938,14 +938,14 @@ class Explorer( object ):
             self.pc_use_technique( pc, choice, choice.exp_tar )
 
     def pop_big_menu ( self ):
+        ''' Menu for Settings / Dev Console found when pressing escape '''
+
         myredraw = bigmenu.ViewReDrawer ( view=bigmenu.ViewDrawer(screen=self.screen),
                                         screen = self.screen, predraw=self.view, caption="Main Menu")
         # menu stuff goes here
-        mymenu = bigmenu.ActualMenu (self.screen, predraw = myredraw)
-        mymenu.add_item("HEY THIS IS A TEST OPTION", 999)
-        mymenu.add_item("HEY THIS IS A TEST OPTION 2", 777)
+        mymenu = bigmenu.ActualMenu (self.screen, predraw = myredraw, fontSize=20)
         mymenu.add_item("Quit to Main Menu", 666)
-        mymenu.add_item("Quit to desktop", 555)     # dmeternal is meant to be able to run on Android but this obvi wouldn't work there
+        mymenu.add_item("Quit to Desktop", 555)     # dmeternal is meant to be able to run on Android but this obvi wouldn't work there
         f = mymenu.query()
 
         if f == 666:
