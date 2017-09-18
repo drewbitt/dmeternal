@@ -1,23 +1,23 @@
 # -*- coding: utf-8 -*-
-#       
+#
 #       Copyright 2014 Joseph Hewitt <pyrrho12@yahoo.ca>
-#       
+#
 #       This program is free software; you can redistribute it and/or modify
 #       it under the terms of the GNU General Public License as published by
 #       the Free Software Foundation; either version 2 of the License, or
 #       (at your option) any later version.
-#       
+#
 #       This program is distributed in the hope that it will be useful,
 #       but WITHOUT ANY WARRANTY; without even the implied warranty of
 #       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #       GNU General Public License for more details.
-#       
+#
 #       You should have received a copy of the GNU General Public License
 #       along with this program; if not, write to the Free Software
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
-#       
-# 
+#
+#
 
 import narrator
 import context
@@ -35,6 +35,9 @@ import chargen
 import charloader
 
 VERSION_ID = "0.5.0 Alpha"
+should_run = 0
+restart_on_exit = 0
+quit_current =0
 
 
 class PosterRedraw( object ):
@@ -144,7 +147,28 @@ def test_campaign_generator( screen ):
         if p._used > 0:
             print "{} [{}]".format( p, p._used )
 
-def main():
+def should_run_switch( screen ):
+    global should_run, quit_current
+    should_run=1
+    quit_current=1
+
+def toggle_fullscreen( screen ):
+    if util.config.getboolean( "DEFAULT", "fullscreen"):
+        util.config.set( "DEFAULT", "fullscreen", "False")
+        util.config.write
+        #print util.config.getboolean(  "DEFAULT", "fullscreen")
+    else:
+        util.config.set( "DEFAULT", "fullscreen", "True")
+        util.config.write
+        #print util.config.getboolean(  "DEFAULT", "fullscreen")
+    global quit_current
+    quit_current = 1
+
+    return 0
+
+
+
+def play():
     pygame.init()
     pygame.display.set_caption("Dungeon Monkey Eternal","DMEternal")
     pygame.display.set_icon(pygame.image.load(util.image_dir("sys_icon.png")))
@@ -167,8 +191,9 @@ def main():
     #rpm.add_item( "Start Bardic Campaign", bardic_start_campaign )
     #rpm.add_item( "Start Gen1 Campaign", default_start_campaign )
     rpm.add_item( "Browse Characters", campaign.browse_pcs )
+    rpm.add_item("Fullscreen (on/off)", toggle_fullscreen )
     #rpm.add_item( "Test Campaign Generator", test_campaign_generator )
-    rpm.add_item( "Quit Game", None )
+    rpm.add_item( "Quit Game", should_run_switch )
 
     cmd = True
     while cmd:
@@ -176,7 +201,17 @@ def main():
         if cmd:
             cmd( screen )
         if pygwrap.GOT_QUIT:
+            global should_run
+            should_run = 1
             break
+        if quit_current!=0:
+            break
+def main():
+    global quit_current, should_run
+    while should_run==0:
+        quit_current = 0
+        should_run = 0
+        play()
 
 
 if __name__=='__main__':
