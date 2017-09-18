@@ -18,6 +18,7 @@ import image
 import rpgmenu
 import spells
 import pathfinding
+import devconsole
 import bigmenu
 
 
@@ -937,6 +938,13 @@ class Explorer( object ):
         if choice:
             self.pc_use_technique( pc, choice, choice.exp_tar )
 
+    def pop_dev_console(self):
+        myredraw = bigmenu.ViewReDrawer ( view=bigmenu.ViewDrawer(screen=self.screen),
+                                          screen = self.screen, predraw=self.view, caption="Dev Console")
+        mymenu = devconsole.DevMenu(self.screen, fontSize = 20)
+
+        f = mymenu.wait_for_input()
+
     def pop_big_menu ( self ):
         ''' Menu for Settings / Dev Console found when pressing escape '''
 
@@ -949,7 +957,7 @@ class Explorer( object ):
         myredraw = bigmenu.ViewReDrawer ( view=bigmenu.ViewDrawer(screen=self.screen),
                                           screen = self.screen, predraw=self.view, caption="Main Menu")
         # menu stuff goes here
-        mymenu = bigmenu.ActualMenu (self.screen, predraw = myredraw, fontSize=20)
+        mymenu = bigmenu.ActualMenu (self.screen, fontSize=20)
         mymenu.add_item("Quit to Title Screen", 666)
         mymenu.add_item("Quit to Desktop", 555)     # dmeternal is meant to be able to run on Android but this obvi wouldn't work there
         f = mymenu.query()
@@ -1142,6 +1150,8 @@ class Explorer( object ):
                         self.flatten_world()
                     elif gdi.unicode == u"\x1b":    # on escp key
                         self.pop_big_menu()
+                    elif gdi.unicode == u"`":
+                        self.pop_dev_console()
 
                 elif gdi.type == pygame.QUIT:
                     self.camp.save(self.screen)

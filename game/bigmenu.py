@@ -47,11 +47,10 @@ class ViewDrawer ( pygame.Rect ):
 
 class ActualMenu (rpgmenu.Menu):
     ''' Class that is a child of rpgmenu, meaning you can add menu items to it. Is same size as overall menu Rect'''
-    def __init__( self, screen, predraw = None, border=None, fontSize=14 ):
+    def __init__( self, screen, border=None, fontSize=14 ):
         x = screen.get_width() // 2 - (ViewDrawer.WIDTH / 2)
         y = screen.get_height() // 2 - ViewDrawer.HEIGHT // 2 + 40 + pygwrap.BIGFONT.get_linesize() * 2
         super(ActualMenu, self).__init__(screen,x,y,ViewDrawer.WIDTH,ViewDrawer.HEIGHT - pygwrap.BIGFONT.get_linesize() * 2, border=border, fontSize=fontSize)
-        self.predraw = predraw
 
 class ViewReDrawer( object ):
     ''' Class that redraws the view whenever it is updated, like the user changing active menu item. Adds a permanent caption section. view=the main ViewDrawer'''
