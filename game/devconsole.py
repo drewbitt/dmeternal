@@ -5,7 +5,7 @@ import pygwrap
 import pygame
 
 class DevMenu( pygame.Rect ):
-
+    ''' Menu object for the dev console that is similar to rpgmenu.Menu but specialized for the dev console '''
     def __init__( self, screen, border=pygwrap.default_border, predraw=None, fontSize=14 ):
 
         x = screen.get_width() // 2 - (ViewDrawer.WIDTH / 2)
@@ -21,15 +21,17 @@ class DevMenu( pygame.Rect ):
         self.predraw = predraw
 
     def render(self, do_extras=True):
+        ''' Displays the menu using predraw '''
         if do_extras:
             if self.predraw:
                 self.predraw( self.screen )
-            if self.border:
-                self.border.render( self.screen , self )
+            '''if self.border:      # if you wanted an extra bordered section at top
+                self.border.render( self.screen , self )'''
 
         # do some rendering of dev console stuff here
 
     def wait_for_input(self):
+        ''' Controls all user input and keeps menu displayed unless an exit has occured '''
         no_exit = True
 
         while no_exit:
@@ -50,10 +52,10 @@ class DevMenu( pygame.Rect ):
             elif pc_input.type == pygame.KEYDOWN:
                 if pc_input.key == pygame.K_UP:
                     # recall last command? here
-                    no_exit = False
+                    print("Pressed up key")
                 elif pc_input.key == pygame.K_RETURN:
                     # execute dev console command here
-                    no_exit = False
+                    print("Pressed return key")
                 elif pc_input.unicode == u"`":
                     # just exit menu
                     no_exit = False

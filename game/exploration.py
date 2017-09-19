@@ -940,10 +940,10 @@ class Explorer( object ):
 
     def pop_dev_console(self):
         myredraw = bigmenu.ViewReDrawer ( view=bigmenu.ViewDrawer(screen=self.screen),
-                                          screen = self.screen, predraw=self.view, caption="Dev Console")
-        mymenu = devconsole.DevMenu(self.screen, fontSize = 20)
+                                          screen = self.screen, predraw=self.view, caption="Dev Console", style="d")
+        mymenu = devconsole.DevMenu(self.screen, predraw = myredraw, fontSize = 20)
 
-        f = mymenu.wait_for_input()
+        mymenu.wait_for_input()
 
     def pop_big_menu ( self ):
         ''' Menu for Settings / Dev Console found when pressing escape '''
@@ -957,7 +957,7 @@ class Explorer( object ):
         myredraw = bigmenu.ViewReDrawer ( view=bigmenu.ViewDrawer(screen=self.screen),
                                           screen = self.screen, predraw=self.view, caption="Main Menu")
         # menu stuff goes here
-        mymenu = bigmenu.ActualMenu (self.screen, fontSize=20)
+        mymenu = bigmenu.ActualMenu (self.screen, fontSize=20, predraw = myredraw)
         mymenu.add_item("Quit to Title Screen", 666)
         mymenu.add_item("Quit to Desktop", 555)     # dmeternal is meant to be able to run on Android but this obvi wouldn't work there
         f = mymenu.query()
