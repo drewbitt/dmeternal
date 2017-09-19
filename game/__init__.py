@@ -156,7 +156,7 @@ def load_settings( screen ):
     rpm = rpgmenu.Menu( screen,screen.get_width()//2-250,screen.get_height()//2-50,500,100,predraw=PosterRedraw(screen) )
     rpm.sort()
     rpm.add_alpha_keys()
-    rpm.add_item( "Fullscreen", None )
+    rpm.add_item("Fullscreen (on/off)", toggle_fullscreen )
     rpm.add_item( "Enable Dev Console", None )
     rpm.add_item( "Difficulty Settings", None)
     rpm.add_item( "Back", None)
@@ -208,7 +208,6 @@ def play():
     #rpm.add_item( "Start Gen1 Campaign", default_start_campaign )
     rpm.add_item( "Browse Characters", campaign.browse_pcs )
     rpm.add_item( "Settings", load_settings)
-    rpm.add_item("Fullscreen (on/off)", toggle_fullscreen )
     #rpm.add_item( "Test Campaign Generator", test_campaign_generator )
     rpm.add_item( "Quit Game", should_run_switch )
 
