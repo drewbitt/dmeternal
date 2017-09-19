@@ -1,22 +1,25 @@
-import maps
+
+import random
+import sys
 import pfov
+import maps
 import pygwrap
 import pygame
-import hotmaps
 import charsheet
+import context
 import items
 import dialogue
 import animobs
 import characters
-import random
 import teams
-import combat
 import stats
 import services
 import image
 import rpgmenu
 import spells
 import pathfinding
+import devconsole
+import bigmenu
 
 
 # Commands should be callable objects which take the explorer and return a value.
@@ -64,7 +67,7 @@ class MoveTo( object ):
         self.step += 1
 
         if (not pc) or ( self.dest == pc.pos ) or ( self.step >
-         len(self.path.results) ) or not exp.scene.on_the_map( *self.dest ):
+         len(self.path.results) ) or not exp.scene.on_the_map( *self.dest ):    # pylint: disable=C0330
             return False
         else:
             first = True
@@ -277,6 +280,9 @@ class Explorer( object ):
         self.safe_camp_bonus = 0
 
         self.record_anim = False
+        self.no_quit = True
+        self.order = None   # think this is used for MoveTo and is none unless moving
+        self.bumper = None
 
         # Update the view of all party members.
         for pc in camp.party:
@@ -381,7 +387,7 @@ class Explorer( object ):
                         m.drop_everything( self.scene )
             elif hasattr( m, "mitose_me" ) and m.mitose_me:
                 self.mitose( m )
-                del( m.mitose_me )
+                del m.mitose_me
 
     def invoke_technique( self, tech, originator, area_of_effect, opening_anim = None, delay_point=None ):
         if self.camp.fight and self.camp.fight.cstat[originator].silent and isinstance( tech, spells.Spell ):
@@ -552,11 +558,10 @@ class Explorer( object ):
         conversation = dialogue.build_conversation( cue , offers )
         coff = conversation
 
-        self.convo = (pc,npc,conversation)
+        self.convo = (pc,npc,conversation)  # pylint: disable=W0201
 
         pc_voice = pc.get_voice()
         npc_voice = npc.get_voice()
-
 
         while coff:
             crd.friendliness = npc.get_friendliness(self.camp)
@@ -604,15 +609,15 @@ class Explorer( object ):
                 self.scene.contents.append( it )
             self.view.regenerate_avatars( self.camp.party )
 
-    def equip_item( self, it, pc, redraw ):
+    def equip_item( self, it, pc ):
         pc.contents.equip( it )
         return True
 
-    def unequip_item( self, it, pc, redraw ):
+    def unequip_item( self, it, pc):
         pc.contents.unequip( it )
         return True
 
-    def drop_item( self, it, pc, redraw ):
+    def drop_item( self, it, pc):
         pc.contents.unequip( it )
         if not it.equipped:
             pc.contents.remove( it )
@@ -639,10 +644,10 @@ class Explorer( object ):
                     self.alert( "{0} can't carry any more.".format( str( opc ) ) )
         return True
 
-    def use_item( self, it, pc, myredraw ):
+    def use_item( self, it, pc):
         it.use( pc, self )
 
-    def learn_spell_from_item( self, it, pc, myredraw ):
+    def learn_spell_from_item( self, it, pc):
         self.camp.known_spells.append( it.spell )
         self.alert( "You have added {0} to your library.".format( it.spell ) )
         if hasattr( it, "quantity" ):
@@ -673,9 +678,7 @@ class Explorer( object ):
             myredraw.csheet.regenerate_avatar()
             self.view.regenerate_avatars( self.camp.party )
             return result
-        else:
-            return True
-
+        return True
 
     def do_level_training( self, student ):
         myredraw = charsheet.CharacterViewRedrawer( csheet=charsheet.CharacterSheet(student, screen=self.screen, camp=self.camp), screen=self.screen, predraw=self.view, caption="Advance Rank" )
@@ -860,8 +863,8 @@ class Explorer( object ):
             for mz in self.scene.monster_zones:
                 if self.scene.monster_zone_is_empty( mz ) and random.randint(1,100) <= restock_chance:
                     NewTeam = teams.Team( default_reaction=characters.SAFELY_ENEMY, home=mz,
-                      rank=max( self.scene.rank, ( self.scene.rank + party_rank ) // 2 ),
-                      strength=100, habitat=self.scene.get_encounter_request() )
+                                        rank=max( self.scene.rank, ( self.scene.rank + party_rank ) // 2 ),
+                                        strength=100, habitat=self.scene.get_encounter_request() )
                     mlist = NewTeam.build_encounter(self.scene)
                     poslist = self.scene.find_free_points_in_rect( mz )
 
@@ -935,6 +938,39 @@ class Explorer( object ):
         if choice:
             self.pc_use_technique( pc, choice, choice.exp_tar )
 
+    def pop_dev_console(self):
+        myredraw = bigmenu.ViewReDrawer ( view=bigmenu.ViewDrawer(screen=self.screen),
+                                          screen = self.screen, predraw=self.view, caption="Dev Console", style="d")
+        mymenu = devconsole.DevMenu(self.screen, predraw = myredraw, fontSize = 20)
+
+        mymenu.wait_for_input()
+
+    def pop_big_menu ( self ):
+        ''' Menu for Settings / Dev Console found when pressing escape '''
+
+        ''' To Do:
+            * Settings (fps, resolution, windowed/fullscreen)
+            * Dev Console either at the bottom of the menu or keybinded to the tilde key instead, utilizing bigmenu still but seperate.
+              Would still keep the big menu for settings
+        '''
+
+        myredraw = bigmenu.ViewReDrawer ( view=bigmenu.ViewDrawer(screen=self.screen),
+                                          screen = self.screen, predraw=self.view, caption="Main Menu")
+        # menu stuff goes here
+        mymenu = bigmenu.ActualMenu (self.screen, fontSize=20, predraw = myredraw)
+        mymenu.add_item("Quit to Title Screen", 666)
+        mymenu.add_item("Quit to Desktop", 555)     # dmeternal is meant to be able to run on Android but this obvi wouldn't work there
+        f = mymenu.query()
+
+        if f == 666:
+            self.camp.save(self.screen)
+            self.no_quit = False
+        elif f == 555:
+            self.camp.save(self.screen)
+            self.no_quit = False
+            pygame.quit()
+            sys.exit()
+
     def pop_explo_menu( self ):
         mymenu = rpgmenu.PopUpMenu( self.screen, self.view )
         pc = self.scene.get_character_at_spot( self.view.mouse_tile )
@@ -959,8 +995,6 @@ class Explorer( object ):
         mymenu.add_item( "Manage Spells", 3 )
         mymenu.add_item( "Camp and Rest", 4 )
         mymenu.add_item( "Reorder Party", 7 )
-        mymenu.add_item( "Quit Game", 5 )
-        mymenu.add_item( "test", 8)
         mymenu.add_item( "Exit", False )
 
         choice = mymenu.query()
@@ -973,15 +1007,10 @@ class Explorer( object ):
             services.SpellManager()(self)
         elif choice == 4:
             self.field_camp()
-        elif choice == 5:
-            self.camp.save(self.screen)
-            self.no_quit = False
         elif choice == 6:
             self.view_party( self.camp.party.index( pc ) )
         elif choice == 7:
             self.reorder_party()
-        elif choice == 8:
-            MiniMap( self)
         elif choice in self.camp.party:
             # Picked a PC. Cast one of their spells.
             self.pop_spell_menu( choice )
@@ -1108,7 +1137,6 @@ class Explorer( object ):
                         services.SpellManager()(self)
                     elif gdi.unicode == u"h" or gdi.unicode == u"?" or gdi.key == pygame.K_F1:
                         self.alert("HELP\n ==== \n 1-4 View party member\n Q Quit and save\n c Center view\n M View map\n R Rest\n s Manage spells",False)
-
                     elif gdi.unicode == u"*":
                         for pc in self.camp.party:
                             pc.xp += 1000
@@ -1120,10 +1148,15 @@ class Explorer( object ):
                         self.camp.known_spells = spells.SPELL_LIST[:]
                     elif gdi.unicode == u"!":
                         self.flatten_world()
+                    elif gdi.unicode == u"\x1b":    # on escp key
+                        self.pop_big_menu()
+                    elif gdi.unicode == u"`":
+                        self.pop_dev_console()
 
                 elif gdi.type == pygame.QUIT:
                     self.camp.save(self.screen)
                     self.no_quit = False
+                # if left mouse button is clicked, move characters to spot. if right button clicked, show pop-up menu
                 elif gdi.type == pygame.MOUSEBUTTONUP:
                     if gdi.button == 1:
                         # Left mouse button.
@@ -1132,6 +1165,5 @@ class Explorer( object ):
                             self.view.overlays.clear()
                         else:
                             self.pick_up( self.view.mouse_tile )
-                    else:
+                    elif gdi.button == 3:
                         self.pop_explo_menu()
-

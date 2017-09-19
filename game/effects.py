@@ -1,5 +1,6 @@
-import stats
+# pylint: disable=R0903, W0621
 import random
+import stats
 import animobs
 import context
 
@@ -11,7 +12,7 @@ class NoEffect( object ):
         self.children = children
         self.anim = anim
 
-    def handle_effect( self, camp, originator, pos, anims, delay=0 ):
+    def handle_effect( self, camp, originator, pos, anims, delay=0 ):   #pylint: disable=W0613
         """Do whatever is required of effect; return list of child effects."""
         return self.children
 
@@ -37,6 +38,7 @@ class NoEffect( object ):
 class PhysicalAttackRoll( NoEffect ):
     def __init__(self, att_skill=stats.PHYSICAL_ATTACK, att_stat=stats.REFLEXES, \
       att_modifier=0, on_success=None, on_failure=None, anim=None ):
+        super(PhysicalAttackRoll, self).__init__()
         self.att_skill = att_skill
         self.att_stat = att_stat
         self.att_modifier = att_modifier
@@ -58,8 +60,7 @@ class PhysicalAttackRoll( NoEffect ):
                 deroll = min( deroll + 25, 95 )
             if atroll > deroll:
                 return self.on_success
-            else:
-                return self.on_failure
+            return self.on_failure
         else:
             return self.on_failure
 
@@ -67,6 +68,7 @@ class OpposedRoll( NoEffect ):
     def __init__(self, att_skill=stats.MAGIC_ATTACK, att_stat=stats.INTELLIGENCE, \
       att_modifier=0, def_skill=stats.MAGIC_DEFENSE, def_stat=stats.PIETY, \
       on_success=None, on_failure=None, anim=None ):
+        super(OpposedRoll, self).__init__()
         self.att_skill = att_skill
         self.att_stat = att_stat
         self.att_modifier = att_modifier
@@ -88,14 +90,13 @@ class OpposedRoll( NoEffect ):
             deroll = min( 51 + target.get_stat( self.def_skill ) + target.get_stat_bonus( self.def_stat ) - originator.get_stat( self.att_skill ) - originator.get_stat_bonus( self.att_stat ) - self.att_modifier , 95 )
             if atroll > deroll:
                 return self.on_success
-            else:
-                return self.on_failure
-        else:
             return self.on_failure
+        return self.on_failure
 
 class PercentRoll( NoEffect ):
     def __init__(self, roll_skill=stats.CRITICAL_HIT, roll_stat=None, roll_modifier=0, \
       target_affects=True, on_success=None, on_failure=None, anim=None ):
+        super(PercentRoll, self).__init__()
         self.roll_skill = roll_skill
         self.roll_stat = roll_stat
         self.roll_modifier = roll_modifier
@@ -118,12 +119,12 @@ class PercentRoll( NoEffect ):
                 tarnum -= ( target.rank() - originator.rank() ) * 4
         if random.randint(1,100) <= tarnum:
             return self.on_success
-        else:
-            return self.on_failure
+        return self.on_failure
 
 class SavingThrow( NoEffect ):
     def __init__(self, roll_skill=stats.AWARENESS, roll_stat=stats.REFLEXES, roll_modifier=0, \
       on_success=None, on_failure=None, on_no_target=None, anim=None ):
+        super(SavingThrow, self).__init__()
         self.roll_skill = roll_skill
         self.roll_stat = roll_stat
         self.roll_modifier = roll_modifier
@@ -146,15 +147,14 @@ class SavingThrow( NoEffect ):
 
             if random.randint(1,100) <= tarnum:
                 return self.on_success
-            else:
-                return self.on_failure
-        else:
-            return self.on_no_target
+            return self.on_failure
+        return self.on_no_target
 
 
 class HealthDamage( NoEffect ):
     def __init__(self, att_dice=(1,6,0), stat_bonus=None, stat_mod=1, element=None, \
       on_death=None, on_success=None, on_failure=None, anim=None ):
+        super(HealthDamage, self).__init__()
         self.att_dice = att_dice
         self.stat_bonus = stat_bonus
         self.stat_mod = stat_mod
@@ -216,15 +216,14 @@ class HealthDamage( NoEffect ):
             if target.is_alright():
                 if dmg > 0:
                     return self.on_success
-                else:
-                    return self.on_failure
-            else:
-                return self.on_death
+                return self.on_failure
+            return self.on_death
         else:
             return self.on_failure
 
 class HealthRestore( NoEffect ):
     def __init__(self, dice=(1,6,0), stat_bonus=stats.PIETY, children=None, anim=animobs.HealthUp ):
+        super(HealthRestore, self).__init__()
         self.dice = dice
         self.stat_bonus = stat_bonus
         if not children:
@@ -246,6 +245,7 @@ class HealthRestore( NoEffect ):
 
 class ManaDamage( NoEffect ):
     def __init__(self, att_dice=(1,6,0), stat_bonus=None, children=None, anim=None ):
+        super(ManaDamage, self).__init__()
         self.att_dice = att_dice
         self.stat_bonus = stat_bonus
         if not children:
@@ -269,6 +269,7 @@ class ManaDamage( NoEffect ):
 
 class ManaRestore( NoEffect ):
     def __init__(self, dice=(1,6,0), stat_bonus=None, children=None, anim=animobs.YellowSparkle ):
+        super(ManaRestore, self).__init__()
         self.dice = dice
         self.stat_bonus = stat_bonus
         if not children:
@@ -290,6 +291,7 @@ class ManaRestore( NoEffect ):
 
 class StatDamage( NoEffect ):
     def __init__(self, stat_to_damage=stats.STRENGTH, amount=1, children=None, anim=None ):
+        super(StatDamage, self).__init__()
         self.amount = amount
         self.stat_to_damage = stat_to_damage
 
@@ -337,6 +339,7 @@ class InstaKill( NoEffect ):
 class Paralyze( NoEffect ):
     """Paralyzes the target for a number of turns."""
     def __init__(self, max_duration=4, children=(), anim=animobs.Paralysis ):
+        super(Paralyze, self).__init__()
         self.max_duration = max_duration
         if not children:
             children = list()
@@ -358,6 +361,7 @@ class Paralyze( NoEffect ):
 class CauseSleep( NoEffect ):
     """Set the Sleep status to True."""
     def __init__(self, children=(), anim=animobs.FallAsleep ):
+        super(CauseSleep, self).__init__()
         if not children:
             children = list()
         self.children = children
@@ -378,6 +382,7 @@ class CauseSleep( NoEffect ):
 class CauseSilence( NoEffect ):
     """Set the Silence status to True."""
     def __init__(self, children=(), anim=animobs.SpeakSilence ):
+        super(CauseSilence, self).__init__()
         if not children:
             children = list()
         self.children = children
@@ -399,6 +404,7 @@ class CauseSilence( NoEffect ):
 class Enchant( NoEffect ):
     """Adds an enchantment to the target's condition list."""
     def __init__(self, e_type, children=(), anim=None, alt_dispel=None ):
+        super(Enchant, self).__init__()
         self.e_type = e_type
         if not children:
             children = list()
@@ -416,12 +422,13 @@ class Enchant( NoEffect ):
                 if self.alt_dispel:
                     new_en.dispel = self.alt_dispel
                 target.condition.append( new_en )
-                
+
         return self.children
 
 class PlaceField( NoEffect ):
     """Adds a field to the gameboard."""
     def __init__(self, f_type, children=None, anim=None ):
+        super(PlaceField, self).__init__()
         self.f_type = f_type
         if not children:
             children = list()
@@ -439,6 +446,7 @@ class PlaceField( NoEffect ):
 class TidyEnchantments( NoEffect ):
     """Remove enchantments of a type from character, remove fields of type too."""
     def __init__(self, e_type, children=None, anim=None ):
+        super(TidyEnchantments, self).__init__()
         self.e_type = e_type
         if not children:
             children = list()
@@ -460,6 +468,7 @@ class TidyEnchantments( NoEffect ):
 
 class CallMonster( NoEffect ):
     def __init__(self, habitat={ context.HAB_EVERY: True }, max_level=1, children=None, anim=None ):
+        super(CallMonster, self).__init__()
         self.habitat = habitat
         self.max_level = max_level
         if not children:
@@ -501,6 +510,7 @@ class RestoreMobility( NoEffect ):
 class Probe( NoEffect ):
     """Places the Probe animob."""
     def __init__(self, children=(), anim=None ):
+        super(Probe, self).__init__()
         if not children:
             children = list()
         self.children = children
@@ -528,7 +538,7 @@ ANIMAL = {stats.UNDEAD: False, stats.DEMON: False, stats.ELEMENTAL: False, \
 ALIVE = {stats.UNDEAD: False, stats.DEMON: False, stats.ELEMENTAL: False, \
     stats.CONSTRUCT: False, stats.CELESTIAL: False}
 CAN_DROWN = {stats.UNDEAD: False, stats.DEMON: False, stats.ELEMENTAL: False, \
-    stats.PLANT: False, stats.CONSTRUCT: False, stats.WATER: False, 
+    stats.PLANT: False, stats.CONSTRUCT: False, stats.WATER: False, \
     stats.CELESTIAL: False}
 PLANT = {stats.PLANT: True }
 UNDEAD = {stats.UNDEAD: True }
@@ -539,6 +549,7 @@ OTHERWORLDLY = { (stats.UNDEAD,stats.DEMON,stats.ELEMENTAL,stats.CELESTIAL): Tru
 class TargetIs( NoEffect ):
     """An effect that branches depending on if target matches provided pattern."""
     def __init__(self, pat=ANIMAL, on_true=(), on_false=(), anim=None ):
+        super(TargetIs, self).__init__()
         self.pat = pat
         if not on_true:
             on_true = list()
@@ -554,14 +565,13 @@ class TargetIs( NoEffect ):
         if target:
             if context.matches_description( target.TEMPLATES, self.pat ):
                 return self.on_true
-            else:
-                return self.on_false
-        else:
             return self.on_false
+        return self.on_false
 
 class TargetIsAlly( NoEffect ):
     """An effect that branches depending on if target is an ally."""
     def __init__(self, on_true=(), on_false=(), anim=None ):
+        super(TargetIsAlly, self).__init__()
         if not on_true:
             on_true = list()
         self.on_true = on_true
@@ -576,14 +586,13 @@ class TargetIsAlly( NoEffect ):
         if target:
             if target.is_enemy( camp, originator ):
                 return self.on_false
-            else:
-                return self.on_true
-        else:
-            return self.on_false
+            return self.on_true
+        return self.on_false
 
 class TargetIsEnemy( NoEffect ):
     """An effect that branches depending on if target is an enemy."""
     def __init__(self, on_true=(), on_false=(), anim=None ):
+        super(TargetIsEnemy, self).__init__()
         if not on_true:
             on_true = list()
         self.on_true = on_true
@@ -598,14 +607,13 @@ class TargetIsEnemy( NoEffect ):
         if target:
             if target.is_enemy( camp, originator ):
                 return self.on_true
-            else:
-                return self.on_false
-        else:
             return self.on_false
+        return self.on_false
 
 class TargetIsDamaged( NoEffect ):
     """An effect that branches depending on if target is damaged."""
     def __init__(self, on_true=(), on_false=(), anim=None ):
+        super(TargetIsDamaged, self).__init__()
         if not on_true:
             on_true = list()
         self.on_true = on_true
@@ -620,12 +628,8 @@ class TargetIsDamaged( NoEffect ):
         if target:
             if target.hp_damage <= 0:
                 return self.on_false
-            else:
-                return self.on_true
-        else:
-            return self.on_false
-
-
+            return self.on_true
+        return self.on_false
 
 if __name__=='__main__':
     dice = (1,8,0)
@@ -633,5 +637,3 @@ if __name__=='__main__':
     for t in range( 2000 ):
         total += sum( random.randint(1,dice[1]) for x in range( dice[0] ) ) + dice[2]
     print float(total) / 2000.0
-
-

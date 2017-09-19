@@ -4,7 +4,7 @@ import glob
 import util
 
 
-MENUFONT = None
+MENUFONT = None     # changed it so this is only used for DescBox, Menu obj has its own MENUFONT var
 
 INIT_DONE = False
 
@@ -37,17 +37,18 @@ class DescBox( pygame.Rect ):
 
 class Menu( pygame.Rect ):
 
-    def __init__(self,screen,x,y,w=30,h=10,menuitem=(150,145,130),menuselect=(250,250,125),border=pygwrap.default_border,predraw=None):
+    def __init__(self,screen,x,y,w=30,h=10,menuitem=(150,145,130),menuselect=(250,250,125),border=pygwrap.default_border,predraw=None, fontSize=14):
         super(Menu, self).__init__(x,y,w,h)
         self.screen = screen
         self.menuitem = menuitem
         self.menuselect = menuselect
         self.border = border
+        self.MENUFONT = pygame.font.Font( util.image_dir( "VeraBd.ttf" ) , fontSize)
 
         self.items = []
         self.top_item = 0
         self.selected_item = 0
-        self.can_cancel = True
+        self.can_cancel = True      # currently unimplemented. may be useful
         self.descbox = None
         self.quick_keys = {}
 
@@ -80,9 +81,9 @@ class Menu( pygame.Rect ):
                     color = self.menuselect
                 else:
                     color = self.menuitem
-                img = MENUFONT.render(self.items[item_num].msg, True, color )
+                img = self.MENUFONT.render(self.items[item_num].msg, True, color )
                 self.screen.blit( img , ( self.left , y ) )
-                y += MENUFONT.get_linesize()
+                y += self.MENUFONT.get_linesize()
             else:
                 break
             item_num += 1
@@ -96,7 +97,7 @@ class Menu( pygame.Rect ):
         # Return the menu item under this mouse position.
         x,y = pos
         if self.collidepoint( pos ):
-            the_item = ( y - self.top ) // MENUFONT.get_linesize() + self.top_item
+            the_item = ( y - self.top ) // self.MENUFONT.get_linesize() + self.top_item
             if the_item >= len( self.items ):
                 the_item = None
             return the_item
@@ -118,7 +119,7 @@ class Menu( pygame.Rect ):
         first_mouse_selection = None
         first_mouse_y = 0
         current_mouse_selection = None
- 
+
         while no_choice_made:
             pc_input = pygwrap.wait_event()
 
@@ -218,7 +219,7 @@ class Menu( pygame.Rect ):
         self.sort()
 
     def menu_height( self ):
-        return self.height // MENUFONT.get_linesize()
+        return self.height // self.MENUFONT.get_linesize()
 
     def reposition( self ):
         if self.selected_item < self.top_item:
@@ -298,5 +299,3 @@ if __name__=='__main__':
     pygame.quit()
 
     print n
-
-
