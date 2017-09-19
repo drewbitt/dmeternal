@@ -152,6 +152,22 @@ def should_run_switch( screen ):
     should_run=1
     quit_current=1
 
+def load_settings( screen ):
+    rpm = rpgmenu.Menu( screen,screen.get_width()//2-250,screen.get_height()//2-50,500,100,predraw=PosterRedraw(screen) )
+    rpm.sort()
+    rpm.add_alpha_keys()
+    rpm.add_item( "Fullscreen", None )
+    rpm.add_item( "Enable Dev Console", None )
+    rpm.add_item( "Difficulty Settings", None)
+    rpm.add_item( "Back", None)
+    cmd = rpm.query()
+    if cmd:
+        pygwrap.please_stand_by( screen, "Loading..." )
+        with open( cmd, "rb" ) as f:
+            camp = cPickle.load( f )
+        if camp:
+            camp.play( screen )
+
 def toggle_fullscreen( screen ):
     if util.config.getboolean( "DEFAULT", "fullscreen"):
         util.config.set( "DEFAULT", "fullscreen", "False")
@@ -191,6 +207,7 @@ def play():
     #rpm.add_item( "Start Bardic Campaign", bardic_start_campaign )
     #rpm.add_item( "Start Gen1 Campaign", default_start_campaign )
     rpm.add_item( "Browse Characters", campaign.browse_pcs )
+    rpm.add_item( "Settings", load_settings)
     rpm.add_item("Fullscreen (on/off)", toggle_fullscreen )
     #rpm.add_item( "Test Campaign Generator", test_campaign_generator )
     rpm.add_item( "Quit Game", should_run_switch )
