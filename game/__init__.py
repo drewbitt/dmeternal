@@ -33,11 +33,9 @@ import glob
 import random
 import chargen
 import charloader
+import sys
 
 VERSION_ID = "0.5.0 Alpha"
-should_run = 0
-restart_on_exit = 0
-quit_current =0
 
 
 class PosterRedraw( object ):
@@ -147,44 +145,39 @@ def test_campaign_generator( screen ):
         if p._used > 0:
             print "{} [{}]".format( p, p._used )
 
-def should_run_switch( screen ):
-    global should_run, quit_current
-    should_run=1
-    quit_current=1
+
+def toggle_fullscreen_default( screen ):
+    if util.config.getboolean( "DEFAULT", "fullscreen"):
+        util.config.set( "DEFAULT", "fullscreen", "False")
+    else:
+        util.config.set( "DEFAULT", "fullscreen", "True")
+        util.config.write(sys.stdout)
+    with open( util.user_dir( "config.cfg" ) , "wb" ) as f:
+        util.config.write( f )
+
+    return 0
 
 def load_settings( screen ):
     rpm = rpgmenu.Menu( screen,screen.get_width()//2-250,screen.get_height()//2-50,500,100,predraw=PosterRedraw(screen) )
     rpm.sort()
     rpm.add_alpha_keys()
-    rpm.add_item("Fullscreen (on/off)", toggle_fullscreen )
+    rpm.add_item("Fullscreen (on/off)", toggle_fullscreen_default )
     rpm.add_item( "Enable Dev Console", None )
     rpm.add_item( "Difficulty Settings", None)
     rpm.add_item( "Back", None)
     cmd = rpm.query()
-    if cmd:
-        pygwrap.please_stand_by( screen, "Loading..." )
-        with open( cmd, "rb" ) as f:
-            camp = cPickle.load( f )
-        if camp:
-            camp.play( screen )
-
-def toggle_fullscreen( screen ):
-    if util.config.getboolean( "DEFAULT", "fullscreen"):
-        util.config.set( "DEFAULT", "fullscreen", "False")
-        util.config.write
-        #print util.config.getboolean(  "DEFAULT", "fullscreen")
-    else:
-        util.config.set( "DEFAULT", "fullscreen", "True")
-        util.config.write
-        #print util.config.getboolean(  "DEFAULT", "fullscreen")
-    global quit_current
-    quit_current = 1
-
-    return 0
+    cmd = True
+    while cmd:
+        cmd = rpm.query()
+        if cmd:
+            cmd( screen )
+        if pygwrap.GOT_QUIT:
+            break
 
 
 
-def play():
+
+def main():
     pygame.init()
     pygame.display.set_caption("Dungeon Monkey Eternal","DMEternal")
     pygame.display.set_icon(pygame.image.load(util.image_dir("sys_icon.png")))
@@ -209,7 +202,7 @@ def play():
     rpm.add_item( "Browse Characters", campaign.browse_pcs )
     rpm.add_item( "Settings", load_settings)
     #rpm.add_item( "Test Campaign Generator", test_campaign_generator )
-    rpm.add_item( "Quit Game", should_run_switch )
+    rpm.add_item( "Quit Game", None )
 
     cmd = True
     while cmd:
@@ -217,18 +210,7 @@ def play():
         if cmd:
             cmd( screen )
         if pygwrap.GOT_QUIT:
-            global should_run
-            should_run = 1
             break
-        if quit_current!=0:
-            break
-def main():
-    global quit_current, should_run
-    while should_run==0:
-        quit_current = 0
-        should_run = 0
-        play()
-
 
 if __name__=='__main__':
     main()
