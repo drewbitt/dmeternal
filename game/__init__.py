@@ -34,6 +34,7 @@ import random
 import chargen
 import charloader
 import sys
+import os
 
 VERSION_ID = "0.5.0 Alpha"
 
@@ -147,13 +148,23 @@ def test_campaign_generator( screen ):
 
 
 def toggle_fullscreen_default( screen ):
-    if util.config.getboolean( "DEFAULT", "fullscreen"):
-        util.config.set( "DEFAULT", "fullscreen", "False")
+    scrsize = width,height = 600,400
+    fullscreen_sz = pygame.display.Info().current_w, pygame.display.Info().current_h
+    win_pos_left = 1 + ((fullscreen_sz[0] - width) // 2)
+    win_pos_top = 1 + ((fullscreen_sz[1] - height) // 2)
+    os.environ['SDL_VIDEO_WINDOW_POS'] = '{0},{1}'.format(win_pos_left, win_pos_top) #reset enviroment varibles
+
+    if util.config.getboolean( "DEFAULT", "fullscreen"): #checks fullscreen in config.cfg
+        util.config.set( "DEFAULT", "fullscreen", "False") #changes fullscreen in config.cfg buffer
+        pygame.display.set_mode((800,600)) #change current display flag
     else:
         util.config.set( "DEFAULT", "fullscreen", "True")
-        util.config.write(sys.stdout)
+        pygame.display.set_mode((800,600),pygame.FULLSCREEN)
+    #write changes in config.cfg to file
     with open( util.user_dir( "config.cfg" ) , "wb" ) as f:
         util.config.write( f )
+    #update display with new flags
+    pygame.display.update()
 
     return 0
 
