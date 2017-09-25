@@ -1,23 +1,23 @@
 # -*- coding: utf-8 -*-
-#       
+#
 #       Copyright 2013 Joeph Hewitt <pyrrho12@yahoo.ca>
-#       
+#
 #       This program is free software; you can redistribute it and/or modify
 #       it under the terms of the GNU General Public License as published by
 #       the Free Software Foundation; either version 2 of the License, or
 #       (at your option) any later version.
-#       
+#
 #       This program is distributed in the hope that it will be useful,
 #       but WITHOUT ANY WARRANTY; without even the implied warranty of
 #       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #       GNU General Public License for more details.
-#       
+#
 #       You should have received a copy of the GNU General Public License
 #       along with this program; if not, write to the Free Software
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
-#       
-# 
+#
+#
 import characters
 import pygame
 import pygwrap
@@ -98,8 +98,11 @@ def choose_species( screen, predraw ):
         rpm.add_item( s.name, s )
     rpm.sort()
     rpm.add_alpha_keys()
+    rpm.add_item("Back", False)
     redraw.caption = "Select this character's species."
-    return rpm.query()
+    query = rpm.query()
+    return query
+
 
 def get_possible_levels( pc, source=characters.PC_CLASSES ):
     """ Return a list of levels the PC qualifies for."""
@@ -230,6 +233,7 @@ def choose_appearance( screen, redraw, pc ):
 
 
 def make_character( screen ):
+
     """Generate and return a new player character."""
     # We're gonna use the same redrawer for this entire process.
     redraw = charsheet.MenuRedrawer( screen = screen )
@@ -239,11 +243,15 @@ def make_character( screen ):
     if gender is False:
         return None
 
+
     # Get species.
     species = choose_species( screen , redraw )
+
     if not species:
         return None
 
+
+    #displays the character sprite based on the gender and race selection
     pc = characters.Character( species = species(), gender = gender )
     redraw.charsheet = charsheet.CharacterSheet( pc , screen = screen )
 

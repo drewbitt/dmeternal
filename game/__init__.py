@@ -168,6 +168,21 @@ def toggle_fullscreen_default( screen ):
 
     return 0
 
+<<<<<<< HEAD
+
+
+def toggle_fullscreen( screen ):
+    if util.config.getboolean( "DEFAULT", "fullscreen"):
+        util.config.set( "DEFAULT", "fullscreen", "False")
+        util.config.write
+        #print util.config.getboolean(  "DEFAULT", "fullscreen")
+    else:
+        util.config.set( "DEFAULT", "fullscreen", "True")
+        util.config.write
+        #print util.config.getboolean(  "DEFAULT", "fullscreen")
+    global quit_current
+    quit_current = 1
+=======
 def load_settings( screen ):
     rpm = rpgmenu.Menu( screen,screen.get_width()//2-250,screen.get_height()//2-50,500,100,predraw=PosterRedraw(screen) )
     rpm.sort()
@@ -184,9 +199,18 @@ def load_settings( screen ):
             cmd( screen )
         if pygwrap.GOT_QUIT:
             break
+>>>>>>> 38e17f5ef5e970bc50019153e86e484a2259fb99
 
 
-
+def load_settings( screen ):
+    rpm = rpgmenu.Menu( screen,screen.get_width()//2-250,screen.get_height()//2-50,500,100,predraw=PosterRedraw(screen) )
+    rpm.sort()
+    rpm.add_alpha_keys()
+    rpm.add_item("Fullscreen (on/off)", toggle_fullscreen )
+    rpm.add_item( "Enable Dev Console", None )
+    rpm.add_item( "Difficulty Settings", None)
+    rpm.add_item( "Back", None)
+    cmd = rpm.query()
 
 def main():
     pygame.init()
