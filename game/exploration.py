@@ -18,7 +18,7 @@ import image
 import rpgmenu
 import spells
 import pathfinding
-import devconsole
+import pyconsole
 import bigmenu
 import os
 import util
@@ -283,6 +283,10 @@ class Explorer( object ):
         self.no_quit = True
         self.order = None   # think this is used for MoveTo and is none unless moving
         self.bumper = None
+
+        x = screen.get_width() // 2 - (750 / 2)
+        y = screen.get_height() // 2 - 400 // 2 + 32
+        self.console = pyconsole.Console(self.screen, (x,y,750,400), key_calls={"d":sys.exit})
 
         # Update the view of all party members.
         for pc in camp.party:
@@ -958,11 +962,21 @@ class Explorer( object ):
             self.pc_use_technique( pc, choice, choice.exp_tar )
 
     def pop_dev_console(self):
-        myredraw = bigmenu.ViewReDrawer ( view=bigmenu.ViewDrawer(screen=self.screen),
-                                          screen = self.screen, predraw=self.view, caption="Dev Console", style="d")
-        mymenu = devconsole.DevMenu(self.screen, predraw = myredraw, fontSize = 20)
+        self.console.set_active(True)
 
-        mymenu.wait_for_input()
+        while self.console.active:
+            pc_input = pygwrap.wait_event()
+            if pc_input.type == pygwrap.TIMEREVENT:
+                # Redraw the console on each timer event.
+                self.console.draw()
+                pygame.display.flip()
+                # pygame.time.wait(10)
+            if pc_input.type == pygame.KEYDOWN and pc_input.unicode == u"`":
+                self.console.set_active(False)
+            else:
+                pygame.event.post(pc_input)
+                self.console.process_input()
+                pygame.event.clear()
 
     def pop_big_menu ( self ):
         ''' Menu for Settings / Dev Console found when pressing escape '''
