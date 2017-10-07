@@ -970,13 +970,10 @@ class Explorer( object ):
                 # Redraw the console on each timer event.
                 self.console.draw()
                 pygame.display.flip()
-                # pygame.time.wait(10)
-            if pc_input.type == pygame.KEYDOWN and pc_input.unicode == u"`":
-                self.console.set_active(False)
-            else:
-                pygame.event.post(pc_input)
-                self.console.process_input()
-                pygame.event.clear()
+                pygame.time.wait(10)
+            pygame.event.post(pc_input)
+            self.console.process_input()
+            pygame.event.clear()
 
     def pop_big_menu ( self ):
         ''' Menu for Settings / Dev Console found when pressing escape '''

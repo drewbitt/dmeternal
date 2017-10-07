@@ -534,6 +534,8 @@ class Console:
 				elif event.key == K_PAGEDOWN:
 					if self.c_scroll > 0:
 						self.c_scroll -= 1
+				elif event.unicode == u"`":
+					self.set_active(False)
 				## Normal character printing
 				elif event.key >= 32:
 					mods = pygame.key.get_mods()
