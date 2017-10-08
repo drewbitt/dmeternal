@@ -881,25 +881,6 @@ class Explorer( object ):
                             break
 
             self.scene.last_updated = self.camp.day
-    def resize_screen(self):
-        scrsize = width,height = 600,400
-        fullscreen_sz = pygame.display.Info().current_w, pygame.display.Info().current_h
-        win_pos_left = 1 + ((fullscreen_sz[0] - width) // 2)
-        win_pos_top = 1 + ((fullscreen_sz[1] - height) // 2)
-        os.environ['SDL_VIDEO_WINDOW_POS'] = '{0},{1}'.format(win_pos_left, win_pos_top) #reset enviroment varibles
-
-        if util.config.getboolean( "DEFAULT", "fullscreen"): #checks fullscreen in config.cfg
-            util.config.set( "DEFAULT", "fullscreen", "False") #changes fullscreen in config.cfg buffer
-            pygame.display.set_mode((800,600)) #change current display flag
-        else:
-            util.config.set( "DEFAULT", "fullscreen", "True")
-            pygame.display.set_mode((800,600),pygame.FULLSCREEN)
-        #write changes in config.cfg to file
-        with open( util.user_dir( "config.cfg" ) , "wb" ) as f:
-            util.config.write( f )
-        #update display with new flags
-        pygame.display.update()
-
 
     def add_spells_for_pc( self, pc, mymenu ):
         """Add all of this pc's castable exploration spells to the menu."""
@@ -988,7 +969,6 @@ class Explorer( object ):
                                           screen = self.screen, predraw=self.view, caption="Main Menu")
         # menu stuff goes here
         mymenu = bigmenu.ActualMenu (self.screen, fontSize=20, predraw = myredraw)
-        mymenu.add_item("Fullscreen (On/Off)",444)
         mymenu.add_item("Quit to Title Screen", 666)
         mymenu.add_item("Quit to Desktop", 555)     # dmeternal is meant to be able to run on Android but this obvi wouldn't work there
         f = mymenu.query()
@@ -1000,8 +980,6 @@ class Explorer( object ):
             self.no_quit = False
             pygame.quit()
             sys.exit()
-        elif f == 444:
-            self.resize_screen()
 
 
     def pop_explo_menu( self ):
