@@ -19,6 +19,7 @@ import rpgmenu
 import spells
 import pathfinding
 import pyconsole
+from consolecmd import *
 import bigmenu
 import os
 import util
@@ -269,8 +270,6 @@ class MiniMap( object ):
 # Rubicon Hiscock had her entire body tattooed by a cloister of Gothic monks, and in this way she became illuminated.
 
 class Explorer( object ):
-    # The object which is exploration of a scene. OO just got existential.
-
     def __init__( self, screen, camp ):
         self.screen = screen
         self.camp = camp
@@ -286,7 +285,7 @@ class Explorer( object ):
 
         x = screen.get_width() // 2 - (750 / 2)
         y = screen.get_height() // 2 - 400 // 2 + 32
-        self.console = pyconsole.Console(self.screen, (x,y,750,400), key_calls={"d":sys.exit})
+        self.console = pyconsole.Console(self.screen, (x,y,750,400), self.camp, functions={"reset_health":reset_pc_health, "reset_mana":reset_pc_mana, "super_stats":super_stats_trigger}, key_calls={"d":sys.exit}, syntax={re_function:console_func}) #Added self.camp.party reference.
 
         # Update the view of all party members.
         for pc in camp.party:
@@ -336,7 +335,6 @@ class Explorer( object ):
             self.alert( "...and get woken up by monsters!" )
             self.safe_camp_bonus += 25
             self.camp.activate_monster( mons[0] )
-
 
     def probe( self, target ):
         csheet = charsheet.CharacterSheet( target, screen=self.screen )
@@ -953,7 +951,7 @@ class Explorer( object ):
                 pygame.display.flip()
                 pygame.time.wait(10)
             pygame.event.post(pc_input)
-            self.console.process_input()
+            self.console.process_input() # Reference to current campaign's party passed so that some commands can access party variables
             pygame.event.clear()
 
     def pop_big_menu ( self ):
