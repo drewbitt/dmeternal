@@ -162,6 +162,7 @@ def choose_level( screen, predraw, pc ):
         rpm.add_alpha_keys()
         rpm.add_item( "Reroll Stats", -1 )
         rpm.set_item_by_value( -1 )
+        rpm.add_item("Change Race", 'change')
 
         l = rpm.query()
 
@@ -169,6 +170,8 @@ def choose_level( screen, predraw, pc ):
             break
         elif l != -1:
             level = l
+        elif l == 'change':
+            return l
 
     return level
 
@@ -211,6 +214,7 @@ def choose_appearance( screen, redraw, pc ):
     rpm.add_item( "Change hat" , 4 )
 
     rpm.add_item( "Finished" , False )
+    rpm.add_item( "Change Race" , 'change')
 
     while not done:
         l = rpm.query()
@@ -229,6 +233,22 @@ def choose_appearance( screen, redraw, pc ):
         elif l == 4:
             alter_hat( pc )
             redraw.charsheet.regenerate_avatar()
+        elif l == 'change':
+            return l
+
+
+
+def final_looks(screen, redraw, pc):
+    redraw.caption = "Final Looks"
+    rpm = charsheet.RightMenu( screen , predraw = redraw )
+    rpm.add_item("Change Gender", 1)
+    rpm.add_item("Change Race", 2)
+    rpm.add_item("Change Class", 3)
+    rpm.add_item("Change Appearance", 4)
+
+    rpm.add_item("I'm Done", 0)
+
+    return rpm.query();
 
 
 
@@ -237,6 +257,10 @@ def make_character( screen ):
     """Generate and return a new player character."""
     # We're gonna use the same redrawer for this entire process.
     redraw = charsheet.MenuRedrawer( screen = screen )
+    rpm = charsheet.RightMenu( screen , predraw = redraw )
+
+   # rpm.query()
+
 
     # Get gender.
     gender = choose_gender( screen , redraw )
@@ -257,15 +281,63 @@ def make_character( screen ):
 
     # Roll stats and pick a class.
     level = choose_level( screen, redraw, pc )
+    redraw.charsheet = charsheet.CharacterSheet( pc , screen = screen )
+    redraw.charsheet.regenerate_avatar()
     if not level:
         return None
+
+    while level == 'change':
+        species = choose_species( screen , redraw )
+        pc = characters.Character( species = species(), gender = gender )
+        redraw.charsheet = charsheet.CharacterSheet( pc , screen = screen )
+        level = choose_level( screen, redraw, pc )
+
+
+    #pc.levels.append( level(1,pc) )
+    #give_starting_equipment( pc )
+    redraw.charsheet.regenerate_avatar()
+
+    # Customize appearance.
+    d = choose_appearance( screen, redraw, pc )
+    while d == 'change':
+        level = choose_level( screen, redraw, pc )
+
+
+
+    done = 1
+    while done != 0:
+        done = final_looks(screen, redraw, pc)
+        if done == 1:
+            gender = choose_gender(screen, redraw)
+            pc = characters.Character( species = species(), gender = gender )
+            redraw.charsheet = charsheet.CharacterSheet( pc , screen = screen )
+            redraw.charsheet.regenerate_avatar()
+        if done == 2:
+            species = choose_species( screen , redraw )
+            pc = characters.Character( species = species(), gender = gender )
+            redraw.charsheet = charsheet.CharacterSheet( pc , screen = screen )
+            redraw.charsheet.regenerate_avatar()
+        if done == 3:
+            level = choose_level( screen, redraw, pc )
+            if not level:
+                return None
+
+            while level == 'change':
+                species = choose_species( screen , redraw )
+                pc = characters.Character( species = species(), gender = gender )
+                redraw.charsheet = charsheet.CharacterSheet( pc , screen = screen )
+                level = choose_level( screen, redraw, pc )
+                redraw.charsheet.regenerate_avatar()
+
 
     pc.levels.append( level(1,pc) )
     give_starting_equipment( pc )
     redraw.charsheet.regenerate_avatar()
 
-    # Customize appearance.
-    choose_appearance( screen, redraw, pc )
+
+
+
+
 
     # Choose a name.
     redraw.caption = "Done!"
