@@ -34,12 +34,11 @@ class ViewDrawer ( pygame.Rect ):
         ''' Render permanent, non-selectable objects, like text, images, logos etc here'''
         pygwrap.default_border.render( screen , self )
 
-        if style == "s":
+        '''if style == "s":
             # Display things for settings menu
             self.just_print_example(screen, self.x + 6, self.y+25, "Label example", "")
-        elif style == "d":
-            # Display things for dev console
-            self.just_print_example(screen, self.x + 6, self.y+25, "Dev example", "")
+        '''
+
 
 class ActualMenu (rpgmenu.Menu):
     ''' Class that is a child of rpgmenu, meaning you can add menu items to it. Is same size as overall menu Rect'''
