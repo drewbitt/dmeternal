@@ -33,6 +33,8 @@ import glob
 import random
 import chargen
 import charloader
+import sys
+import os
 
 VERSION_ID = "0.5.0 Alpha"
 
@@ -144,6 +146,46 @@ def test_campaign_generator( screen ):
         if p._used > 0:
             print "{} [{}]".format( p, p._used )
 
+
+def toggle_fullscreen_default( screen ):
+    scrsize = width,height = 600,400
+    fullscreen_sz = pygame.display.Info().current_w, pygame.display.Info().current_h
+    win_pos_left = 1 + ((fullscreen_sz[0] - width) // 2)
+    win_pos_top = 1 + ((fullscreen_sz[1] - height) // 2)
+    os.environ['SDL_VIDEO_WINDOW_POS'] = '{0},{1}'.format(win_pos_left, win_pos_top) #reset enviroment varibles
+
+    if util.config.getboolean( "DEFAULT", "fullscreen"): #checks fullscreen in config.cfg
+        util.config.set( "DEFAULT", "fullscreen", "False") #changes fullscreen in config.cfg buffer
+        pygame.display.set_mode((800,600)) #change current display flag
+    else:
+        util.config.set( "DEFAULT", "fullscreen", "True")
+        pygame.display.set_mode((800,600),pygame.FULLSCREEN)
+    #write changes in config.cfg to file
+    with open( util.user_dir( "config.cfg" ) , "wb" ) as f:
+        util.config.write( f )
+    #update display with new flags
+    pygame.display.update()
+
+    return 0
+
+
+def load_settings( screen ):
+    rpm = rpgmenu.Menu( screen,screen.get_width()//2-250,screen.get_height()//2-50,500,100,predraw=PosterRedraw(screen) )
+    rpm.sort()
+    rpm.add_alpha_keys()
+    rpm.add_item("Fullscreen (on/off)", toggle_fullscreen_default )
+    rpm.add_item( "Enable Dev Console", None )
+    rpm.add_item( "Difficulty Settings", None)
+    rpm.add_item( "Back", None)
+    cmd = rpm.query()
+    cmd = True
+    while cmd:
+        cmd = rpm.query()
+        if cmd:
+            cmd( screen )
+        if pygwrap.GOT_QUIT:
+            break
+
 def main():
     pygame.init()
     pygame.display.set_caption("Dungeon Monkey Eternal","DMEternal")
@@ -167,6 +209,7 @@ def main():
     #rpm.add_item( "Start Bardic Campaign", bardic_start_campaign )
     #rpm.add_item( "Start Gen1 Campaign", default_start_campaign )
     rpm.add_item( "Browse Characters", campaign.browse_pcs )
+    rpm.add_item( "Settings", load_settings)
     #rpm.add_item( "Test Campaign Generator", test_campaign_generator )
     rpm.add_item( "Quit Game", None )
 
@@ -177,7 +220,6 @@ def main():
             cmd( screen )
         if pygwrap.GOT_QUIT:
             break
-
 
 if __name__=='__main__':
     main()
