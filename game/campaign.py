@@ -41,7 +41,7 @@ import narrator
 class Campaign( object ):
     '''A general holder for all the stuff that goes into a DME campaign.'''
     party_size = 4
-    def __init__( self, name = "BobDwarf19", scene=None, entrance=None, xp_scale = 0.65 ):
+    def __init__( self, name = "BobDwarf19", scene=None, entrance=None, xp_scale=0.65):
         self.name = name
         self.party = list()
         self.graveyard = list()
@@ -55,6 +55,19 @@ class Campaign( object ):
         self.gold = 300
         self.day = 1
         self.xp_scale = xp_scale
+
+    def get_difficulty(self, xp_scale):
+        self.xp_scale = xp_scale
+        dif_type = ""
+        if self.xp_scale == 0.65:
+            dif_type = "Normal"
+        elif self.xp_scale == 0.8:
+            dif_type = "Easy"
+        elif self.xp_scale == 0.25:
+            dif_type = "Endless"
+        else:
+            dif_type = "Hard"
+        return dif_type
 
     def add_party( self, party ):
         '''Add the party, give them random spells, fill the known spell list.'''
