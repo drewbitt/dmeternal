@@ -202,7 +202,7 @@ class Menu( pygame.Rect ):
     alpha_key_sequence = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
 
     def add_alpha_keys(self):
-        # Adds a quick key for every item currently in the menu starting at 'a'.
+        # Adds a quick key for every item currently in the menu.
         key_num = 0
         for item in self.items:
             item.msg = self.alpha_key_sequence[ key_num ] + ') ' + item.msg

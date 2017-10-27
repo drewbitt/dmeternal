@@ -38,7 +38,6 @@ import os
 
 VERSION_ID = "0.5.0 Alpha"
 
-set_xp = 0.65
 
 class PosterRedraw( object ):
     def __init__( self, screen ):
@@ -108,10 +107,9 @@ def bardic_start_campaign( screen ):
             camp.play( screen )
 
 def endless_start_campaign( screen ):
-    global set_xp
     init = narrator.plots.PlotState(rank=1)
     pygwrap.please_stand_by( screen, "Building world..." )
-    nart = narrator.Narrative( campaign.Campaign(xp_scale=set_xp), init, adv_type="STUB_ENDLESS" )
+    nart = narrator.Narrative( campaign.Campaign(xp_scale=0.25), init, adv_type="STUB_ENDLESS" )
     if nart.story:
         nart.build()
         camp = nart.camp
@@ -177,7 +175,7 @@ def load_settings( screen ):
     rpm.add_alpha_keys()
     rpm.add_item("Fullscreen (on/off)", toggle_fullscreen_default )
     rpm.add_item( "Enable Dev Console", None )
-    rpm.add_item( "Difficulty Settings", difficulty_settings)
+    rpm.add_item( "Difficulty Settings", None)
     rpm.add_item( "Back", None)
     cmd = rpm.query()
     cmd = True
@@ -188,58 +186,6 @@ def load_settings( screen ):
         if pygwrap.GOT_QUIT:
             break
 
-<<<<<<< Updated upstream
-=======
-<<<<<<< HEAD
-def difficulty_settings( screen ):
-    global set_xp
-    rpm = rpgmenu.Menu(screen, screen.get_width() // 2 - 250, screen.get_height() // 2 - 50, 500, 100,
-    predraw=PosterRedraw(screen))
-    rpm.sort()
-    rpm.add_alpha_keys()
-    rpm.add_item("Easy", 1)
-    rpm.add_item("Normal(default)", 2)
-    rpm.add_item("Hard", 3)
-    rpm.add_item("Endless", 4)
-    rpm.add_item("Check setting", 5)
-    rpm.add_item("Back", None)
-    cmd = rpm.query()
-    if cmd == 1:
-        set_xp = 0.8
-    elif cmd == 2:
-        set_xp = 0.65
-    elif cmd == 3:
-        set_xp = 0.4
-    elif cmd == 4:
-        set_xp = 0.25
-    elif cmd == 5:
-        check_difficulty(screen)
-
-def check_difficulty( screen ):
-    rpm = rpgmenu.Menu(screen, screen.get_width() // 2 - 250, screen.get_height() // 2 - 50, 500, 100,
-    predraw=PosterRedraw(screen))
-    rpm.sort()
-    rpm.add_alpha_keys()
-    global set_xp
-    init = narrator.plots.PlotState(rank=1)
-    nart = narrator.Narrative(campaign.Campaign(xp_scale=set_xp), init, adv_type="STUB_ENDLESS")
-    if nart.story:
-        nart.build()
-    difficulty_type = nart.camp.get_difficulty(set_xp)
-    rpm.add_item(difficulty_type, None)
-    rpm.add_item("Back", None)
-    cmd = rpm.query()
-    cmd = True
-    while cmd:
-        cmd = rpm.query()
-        if cmd:
-            cmd(screen)
-        if pygwrap.GOT_QUIT:
-            break
-
-=======
->>>>>>> 1f53b755f371019156c7ed754aa9373bca3cdffc
->>>>>>> Stashed changes
 def main():
     pygame.init()
     pygame.display.set_caption("Dungeon Monkey Eternal","DMEternal")
