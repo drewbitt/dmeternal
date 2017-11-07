@@ -1,10 +1,10 @@
 import unittest
-import game
+from __init__ import main
 #import __init__
 
 class TestMethods(unittest.TestCase):
     def test_add(self):
-        self.assertRaises(Exception, game.main())
+        self.assertRaises(Exception, main())
 
 if __name__ == '__main__':
     #game = main()
