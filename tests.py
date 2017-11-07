@@ -1,5 +1,5 @@
 import unittest
-import game
+from .game.campaign import *
 import pygame
 import pygwrap
 #from __init__ import main
