@@ -22,7 +22,7 @@ class ViewDrawer ( pygame.Rect ):
         y = screen.get_height() // 2 - self.HEIGHT // 2 + 32
         super(ViewDrawer, self).__init__(x,y,self.WIDTH,self.HEIGHT)
 
-    def just_print_example( self, screen, x, y, text1, text2, width=120, color=pygwrap.TEXT_COLOR ):
+    def just_print_example( self, screen, x, y, text1, text2, width=200, color=pygwrap.TEXT_COLOR ):
         """Do proper justification for stat line at x,y.
         Just an example of how to print."""
         if text1:
@@ -30,9 +30,13 @@ class ViewDrawer ( pygame.Rect ):
         if text2:
             pygwrap.draw_text( screen, pygwrap.SMALLFONT, text2, pygame.Rect( x, y, width, 20 ), justify = 1, color=color )
 
-    def render_permanent_stuff(self, screen, style):
+    def render_permanent_stuff(self, screen, style, camp=None):
         ''' Render permanent, non-selectable objects, like text, images, logos etc here'''
+        self.style = style
+        self.camp = camp
         pygwrap.default_border.render( screen , self )
+        if style == "difficulty":
+            self.just_print_example(screen, self.x + 6, self.y + 25, "Current difficulty:", camp.get_difficulty(camp.xp_scale))
 
         '''if style == "s":
             # Display things for settings menu
@@ -50,11 +54,12 @@ class ActualMenu (rpgmenu.Menu):
 
 class ViewReDrawer( object ):
     ''' Class that redraws the view whenever it is updated, like the user changing active menu item. Adds a permanent caption section. view=the main ViewDrawer'''
-    def __init__( self, border_rect=None, backdrop="bg_wests_stonewall5.png", menu=None, view=None, screen=None, caption=None, predraw=None, style="s" ):
+    def __init__( self, border_rect=None, backdrop="bg_wests_stonewall5.png", menu=None, view=None, screen=None, caption=None, predraw=None, style= "s", camp=None ):
         self.backdrop = image.Image( backdrop )
         self.counter = 0
         self.view = view
         self.style = style
+        self.camp = camp;
 
         if screen and not border_rect:
             border_rect = pygame.Rect( screen.get_width()//2 + 64, screen.get_height()//2 - ViewDrawer.HEIGHT//2 + 32, ViewDrawer.WIDTH - 64, ViewDrawer.HEIGHT )
@@ -77,7 +82,7 @@ class ViewReDrawer( object ):
             self.backdrop.tile( screen , ( self.counter * 5 , self.counter ) )
 
         if self.view:
-            self.view.render_permanent_stuff( screen, self.style )
+            self.view.render_permanent_stuff( screen, self.style, self.camp)
 
         # redraw caption rectangle
         if self.caption and self.caption_rect:

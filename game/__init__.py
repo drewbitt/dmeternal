@@ -175,7 +175,6 @@ def load_settings( screen ):
     rpm.add_alpha_keys()
     rpm.add_item("Fullscreen (on/off)", toggle_fullscreen_default )
     rpm.add_item( "Enable Dev Console", None )
-    rpm.add_item( "Difficulty Settings", None)
     rpm.add_item( "Back", None)
     cmd = rpm.query()
     cmd = True

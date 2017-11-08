@@ -975,26 +975,46 @@ class Explorer( object ):
             self.console.process_input() # Reference to current campaign's party passed so that some commands can access party variables
             pygame.event.clear()
 
-    def pop_big_menu ( self ):
-        ''' Menu for Settings / Dev Console found when pressing escape '''
+    def pop_difficulty_settings(self):
+        # change size here
 
-        ''' To Do:
-            * Settings (fps, resolution, windowed/fullscreen)
-            * Dev Console either at the bottom of the menu or keybinded to the tilde key instead, utilizing bigmenu still but seperate.
-              Would still keep the big menu for settings
-        '''
+        myredraw = bigmenu.ViewReDrawer(view=bigmenu.ViewDrawer(screen=self.screen),
+                                        screen=self.screen, predraw=self.view, caption="Main Menu", style = "difficulty", camp = self.camp)
 
-        myredraw = bigmenu.ViewReDrawer ( view=bigmenu.ViewDrawer(screen=self.screen),
-                                          screen = self.screen, predraw=self.view, caption="Main Menu")
         # menu stuff goes here
-        mymenu = bigmenu.ActualMenu (self.screen, fontSize=20, predraw = myredraw)
-        mymenu.add_item("Fullscreen (On/Off)",444)
+        mymenu = bigmenu.ActualMenu(self.screen, fontSize=20, predraw=myredraw)
+        mymenu.add_item("Change to easy", 1)
+        mymenu.add_item("Change to normal", 2)
+        mymenu.add_item("Change to hard", 3)
+        mymenu.add_item("Change to endless", 4)
+        
+        cmd = mymenu.query()
+        if cmd == 1:
+            self.camp.xp_scale = 0.8
+        elif cmd == 2:
+            self.camp.xp_scale = 0.65
+        elif cmd == 3:
+            self.camp.xp_scale = 0.4
+        elif cmd == 4:
+            self.camp.xp_scale = 0.25
+
+    def pop_big_menu(self):
+        ''' Menu for Settings / Dev Console found when pressing escape'''
+
+        myredraw = bigmenu.ViewReDrawer(view=bigmenu.ViewDrawer(screen=self.screen),
+                                        screen=self.screen, predraw=self.view, caption="Main Menu")
+        # menu stuff goes here
+        mymenu = bigmenu.ActualMenu(self.screen, fontSize=20, predraw=myredraw)
+        mymenu.add_item("Fullscreen (On/Off)", 444)
+        mymenu.add_item("Change difficulty settings", 777)
         mymenu.add_item("Quit to Title Screen", 666)
-        mymenu.add_item("Quit to Desktop", 555)     # dmeternal is meant to be able to run on Android but this obvi wouldn't work there
+        mymenu.add_item("Quit to Desktop", 555)  # dmeternal is meant to be able to run on Android but this obvi wouldn't work there
         f = mymenu.query()
         if f == 666:
             self.camp.save(self.screen)
             self.no_quit = False
+        elif f == 777:
+            self.pop_difficulty_settings()
         elif f == 555:
             self.camp.save(self.screen)
             self.no_quit = False
