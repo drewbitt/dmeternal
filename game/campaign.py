@@ -18,24 +18,25 @@
 #       MA 02110-1301, USA.
 #
 '''
-import random
-import glob
 import cPickle
-import util
-import charsheet
-import stats
-import combat
-import pfov
-import exploration
-import pygwrap
-import enchantments
-import container
-import maps
-import spells
-import monsters
+import glob
+import random
+
 import characters
 import chargen
+import charsheet
+import combat
+import container
+import enchantments
+import exploration
+import maps
+import monsters
 import narrator
+import pfov
+import pygwrap
+import spells
+import stats
+import util
 
 
 class Campaign( object ):

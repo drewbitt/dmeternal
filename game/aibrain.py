@@ -1,10 +1,13 @@
-import pfov
-import pygame
-import pygwrap
 import random
+
+import pygame
+
 import enchantments
 import hotmaps
+import pfov
+import pygwrap
 import stats
+
 
 class BasicAI( object ):
     """The default AI. It treats all enemies as identical."""

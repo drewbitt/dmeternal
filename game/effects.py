@@ -1,8 +1,10 @@
 # pylint: disable=R0903, W0621
 import random
-import stats
+
 import animobs
 import context
+import stats
+
 
 class NoEffect( object ):
     """An effect that does nothing. Good for placing anims, subclass of the rest."""

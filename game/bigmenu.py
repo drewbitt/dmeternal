@@ -1,8 +1,10 @@
 
-import rpgmenu
-import pygwrap
-import image
 import pygame
+
+import image
+import pygwrap
+import rpgmenu
+
 
 class ViewDrawer ( pygame.Rect ):
     ''' Re-implemented one of the charsheet classes to work for the BigMenu. Combined with

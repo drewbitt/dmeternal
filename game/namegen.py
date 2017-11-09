@@ -20,9 +20,11 @@ License along with name-gen.  If not, see
 <http://www.gnu.org/licenses/>.
 """
 
-import random
 import locale
+import random
+
 import util
+
 
 class NameGen:
     """

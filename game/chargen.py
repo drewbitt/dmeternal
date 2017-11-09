@@ -18,14 +18,16 @@
 #       MA 02110-1301, USA.
 #
 #
-import characters
-import pygame
-import pygwrap
-import items
-import stats
-import rpgmenu
-import charsheet
 import inspect
+
+import pygame
+
+import characters
+import charsheet
+import items
+import pygwrap
+import rpgmenu
+import stats
 
 
 def give_starting_equipment( pc ):

@@ -1,5 +1,7 @@
-import pfov
 import random
+
+import pfov
+
 
 # Invocations are targetable effects used by characters- for example, spells
 # and combat techniques.

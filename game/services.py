@@ -3,14 +3,16 @@
 Manages selling/buying items, learning/discarding spells, staying in the inn, choosing a job, and
 resurrection/restoration/curing posion/removing a curse in the temple'''
 
-import random
 import copy
+import random
+
 import pygame
-import spells
+
 import charsheet
+import enchantments
 import items
 import pfov
-import enchantments
+import spells
 import stats
 
 GENERAL_STORE = ( items.SWORD, items.AXE, items.MACE, items.DAGGER, items.STAFF,

@@ -1,7 +1,5 @@
 # Pathfinding algorithm.
 
-import pygame
-import random
 
 class HotTile( object ):
     def __init__( self ):

@@ -1,20 +1,21 @@
-import characters
-import teams
-import hotmaps
-import pygwrap
-import pygame
-import maps
 import collections
-import image
-import pfov
 import random
-import stats
-import rpgmenu
+
+import pygame
+
 import animobs
+import characters
 import effects
 import enchantments
-import aibrain
+import hotmaps
+import image
+import maps
+import pfov
+import pygwrap
+import rpgmenu
 import services
+import stats
+
 
 class TacticsRedraw( object ):
     def __init__( self, chara, comba, explo, hmap = None ):

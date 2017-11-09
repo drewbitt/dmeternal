@@ -1,11 +1,13 @@
-import stats
-import random
-import effects
-import animobs
 import inspect
-import teams
+import random
+
+import animobs
 import context
+import effects
 import enchantments
+import stats
+import teams
+
 
 class MultiTrap( object ):
     NAME = "Boring Trap"

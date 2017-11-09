@@ -3,20 +3,22 @@
 # but can affect the terrain of the tile it is placed in. Walking onto the tile
 # or bumping it will activate its effect.
 
-import maps
-import services
+import random
+
+import pygame
+
+import charloader
+import charsheet
+import container
+import context
+import effects
 import exploration
 import items
-import traps
-import random
-import container
-import rpgmenu
-import pygame
+import maps
 import pygwrap
-import effects
-import charsheet
-import charloader
-import context
+import rpgmenu
+import traps
+
 
 class PuzzleMenu( rpgmenu.Menu ):
     WIDTH = 350

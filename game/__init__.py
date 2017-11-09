@@ -19,22 +19,22 @@
 #       
 # 
 
-import narrator
-import context
-import maps
-import pygame
-import pygwrap
-import rpgmenu
-import campaign
-import util
 import cPickle
-import image
-import glob
+import os
 import random
+
+import pygame
+
+import campaign
 import chargen
 import charloader
-import sys
-import os
+import context
+import image
+import maps
+import narrator
+import pygwrap
+import rpgmenu
+import util
 
 VERSION_ID = "0.5.0 Alpha"
 

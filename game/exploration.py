@@ -1,28 +1,23 @@
-
-import random
 import sys
-import pfov
-import maps
-import pygwrap
+import sys
+
 import pygame
-import charsheet
-import context
-import items
-import dialogue
-import animobs
-import characters
-import teams
-import stats
-import services
-import image
-import rpgmenu
-import spells
-import pathfinding
-import pyconsole
-from consolecmd import *
+
 import bigmenu
-import os
+import characters
+import charsheet
+import maps
+import pathfinding
+import pfov
+import pyconsole
+import pygwrap
+import rpgmenu
+import services
+import teams
 import util
+from consolecmd import *
+
+
 # Commands should be callable objects which take the explorer and return a value.
 # If untrue, the command stops.
 
