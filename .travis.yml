@@ -16,8 +16,5 @@ script:
     - sed -i '/def main():/a \   \ os.environ["SDL_VIDEODRIVER"] = "dummy"' game/__init__.py
     - sed -i 's/set_mode( (0,0)/set_mode( (1920,1080)/' game/__init__.py
     - python setup.py install
-    - coverage run tests.py
 after_success:
     - codecov
-#after_setup: --Temporarily removed as codecov documentation suggest declaring after_success:
-#    - codecov
