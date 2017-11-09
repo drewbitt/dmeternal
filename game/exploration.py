@@ -985,13 +985,13 @@ class Explorer( object ):
         
         cmd = mymenu.query()
         if cmd == 1:
-            self.camp.xp_scale = 0.8
+            self.camp.xp_scale = 1.3
         elif cmd == 2:
             self.camp.xp_scale = 0.65
         elif cmd == 3:
-            self.camp.xp_scale = 0.4
+            self.camp.xp_scale = 0.35
         elif cmd == 4:
-            self.camp.xp_scale = 0.25
+            self.camp.xp_scale = 0.15
 
     def pop_big_menu(self):
         ''' Menu for Settings / Dev Console found when pressing escape'''
