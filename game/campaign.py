@@ -56,6 +56,17 @@ class Campaign( object ):
         self.day = 1
         self.xp_scale = xp_scale
 
+    def get_difficulty(self, xp_scale):
+        self.xp_scale = xp_scale
+        if(xp_scale == 0.8):
+            return "easy"
+        elif (xp_scale == 0.65):
+            return "normal"
+        elif (xp_scale == 0.4):
+            return "hard"
+        else:
+            return "endless"
+
     def add_party( self, party ):
         '''Add the party, give them random spells, fill the known spell list.'''
         self.party = party
