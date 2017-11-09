@@ -3,14 +3,14 @@ dist: trusty
 sudo: required
 python:
     - "2.7"
-    - "2.6"
 before_install:
     - sudo apt-get update -qq
     - sudo apt-get build-dep -qq python-pygame
     - sudo apt-get install -qq mercurial
-    - sudo apt-get install xvfb
-    - export DISPLAY=:99
-    - xvfb start
+    # xvfb used to install and use pyautogui
+    - sudo apt-get install -qq xvfb
+    - sudo Xvfb :1 -screen 0 800x600x16 &
+    - export DISPLAY=:1.0
 install:
     - pip install hg+http://bitbucket.org/pygame/pygame
     - pip install codecov
@@ -20,9 +20,12 @@ install:
     - pip install pyautogui
 script:
     # - sed -i '/import charloader/a import os' game/__init__.py
-    - sed -i '/def main():/a \   \ os.environ["SDL_VIDEODRIVER"] = "dummy"' game/__init__.py
-    - sed -i 's/set_mode( (0,0)/set_mode( (1920,1080)/' game/__init__.py
+    - sed -i '/def main():/a \   \ os.environ["SDL_VIDEODRIVER"] = "x11"' game/__init__.py
+    - sed -i 's/set_mode( (0,0)/set_mode( (800, 600)/' game/__init__.py
     - python setup.py install
-    - python main.py & python test_run.py
+    - python main.py &
+    - PID=$!
+    - python test_run.py
+    - wait $PID
 after_success:
     - codecov
