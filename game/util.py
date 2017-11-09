@@ -18,10 +18,9 @@
 #       MA 02110-1301, USA.
 #       
 # 
-import os
 import ConfigParser
+import os
 import sys
-
 
 USERDIR = os.path.expanduser( os.path.join( '~' , 'dmeternal' ) )
 if not os.path.exists( USERDIR ):

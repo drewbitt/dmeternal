@@ -101,12 +101,12 @@ __version__ = '$Id$'
 import math
 import sys
 
-from pyglet.gl import *
 from pyglet import clock
 from pyglet import event
 from pyglet import graphics
 from pyglet import image
 from pyglet import sprite
+from pyglet.gl import *
 
 _is_epydoc = hasattr(sys, 'is_epydoc') and sys.is_epydoc
 

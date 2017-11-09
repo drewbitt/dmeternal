@@ -1,17 +1,19 @@
-import pygame
-import image
-import weakref
-import characters
-import math
-import pfov
 import collections
-import pygwrap
-import enchantments
-import items
-import context
+import math
 import random
-import monsters
+import weakref
+
+import pygame
+
+import characters
 import container
+import context
+import enchantments
+import image
+import items
+import monsters
+import pfov
+import pygwrap
 
 # Enumerated constants for sprite sheets.
 SPRITE_GROUND, SPRITE_WALL, SPRITE_BORDER, SPRITE_INTERIOR, SPRITE_FLOOR, \

@@ -1,8 +1,9 @@
-import pygame
-import pygwrap
 import glob
-import util
 
+import pygame
+
+import pygwrap
+import util
 
 MENUFONT = None     # changed it so this is only used for DescBox, Menu obj has its own MENUFONT var
 

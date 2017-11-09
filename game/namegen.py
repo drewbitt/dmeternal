@@ -20,8 +20,9 @@ License along with name-gen.  If not, see
 <http://www.gnu.org/licenses/>.
 """
 
-import random
 import locale
+import random
+
 import util
 
 class NameGen:
@@ -211,4 +212,5 @@ if __name__=="__main__":
 #    myfile = open( "out.txt", "w" )
 #    for t in range( 500 ):
 #        myfile.write( G2.gen_word( True ) + "\n" )
+
 #    myfile.close()

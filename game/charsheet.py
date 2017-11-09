@@ -1,8 +1,9 @@
 import pygame
-import pygwrap
-import stats
-import rpgmenu
+
 import image
+import pygwrap
+import rpgmenu
+import stats
 from items import Item
 from spells import COLORS, COLOR_NAME, Spell
 

@@ -1,6 +1,4 @@
-import context
-
-    # Create the outline of a well-formed module, with these characteristics:
+# Create the outline of a well-formed module, with these characteristics:
     # - Has enough resources to complete (temple, shops, encounters, treasure)
     # - Directly connected areas have close difficulty ratings
     # - Areas with large difficulty jumps may be connected by a roadblock

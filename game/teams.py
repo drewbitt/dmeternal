@@ -1,8 +1,10 @@
 import random
-import stats
+
 import characters
 import context
 import namegen
+import stats
+
 
 class Faction( object ):
     def __init__( self, name="Da Fakshun", primary=context.HAB_EVERY, secondary=None, reaction=0 ):

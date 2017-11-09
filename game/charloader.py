@@ -1,8 +1,10 @@
-import glob
-import util
 import cPickle
-import charsheet
+import glob
 import os
+
+import charsheet
+import util
+
 
 def load_characters( party, screen, predraw=None, delete_file=True, max_party_size=4 ):
     file_list = glob.glob( util.user_dir( "c_*.sav" ) )

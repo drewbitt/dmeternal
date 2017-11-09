@@ -3,8 +3,10 @@
 # not be given lightly; although each Aid object can be used only once, try to
 # make sure there's no way to scum Aid, since it's powerful stuff.
 
-import items
 import random
+
+import items
+
 
 class ProvisionAid( object ):
     """Give potions or other gear to help the party on their way."""

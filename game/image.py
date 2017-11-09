@@ -1,7 +1,9 @@
 # Load one image file, use it for multiple images.
 
-import pygame
 import weakref
+
+import pygame
+
 import util
 
 # Keep a list of already-loaded images, to save memory when multiple objects

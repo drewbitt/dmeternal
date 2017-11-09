@@ -18,24 +18,25 @@
 #       MA 02110-1301, USA.
 #
 '''
-import random
-import glob
 import cPickle
-import util
-import charsheet
-import stats
-import combat
-import pfov
-import exploration
-import pygwrap
-import enchantments
-import container
-import maps
-import spells
-import monsters
+import glob
+import random
+
 import characters
 import chargen
+import charsheet
+import combat
+import container
+import enchantments
+import exploration
+import maps
+import monsters
 import narrator
+import pfov
+import pygwrap
+import spells
+import stats
+import util
 
 
 class Campaign( object ):
@@ -55,6 +56,17 @@ class Campaign( object ):
         self.gold = 300
         self.day = 1
         self.xp_scale = xp_scale
+
+    def get_difficulty(self, xp_scale):
+        self.xp_scale = xp_scale
+        if(xp_scale == 1.3):
+            return "easy"
+        elif (xp_scale == 0.65):
+            return "normal"
+        elif (xp_scale == 0.35):
+            return "hard"
+        else:
+            return "endless"
 
     def add_party( self, party ):
         '''Add the party, give them random spells, fill the known spell list.'''
