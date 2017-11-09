@@ -11,10 +11,14 @@ before_install:
 install:
     - pip install hg+http://bitbucket.org/pygame/pygame
     - pip install codecov
+    # for pyautogui
+    - pip install pillow Image python-xlib
+    - pip install pyautogui
 script:
     # - sed -i '/import charloader/a import os' game/__init__.py
     - sed -i '/def main():/a \   \ os.environ["SDL_VIDEODRIVER"] = "dummy"' game/__init__.py
     - sed -i 's/set_mode( (0,0)/set_mode( (1920,1080)/' game/__init__.py
     - python setup.py install
+    - python main.py & python test_run.py
 after_success:
     - codecov
