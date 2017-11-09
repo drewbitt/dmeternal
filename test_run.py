@@ -2,7 +2,7 @@ import pyautogui
 import time
 import subprocess
 
-subprocess.call(["fg"])
+subprocess.call("fg", shell=True)
 print("got here after fg!")
 time.sleep(2)
 
