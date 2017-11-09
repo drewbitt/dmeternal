@@ -36,7 +36,7 @@ import pygwrap
 import rpgmenu
 import util
 
-VERSION_ID = "0.5.0 Alpha"
+VERSION_ID = "0.6.0 Alpha"
 
 
 class PosterRedraw( object ):
@@ -174,7 +174,6 @@ def load_settings( screen ):
     rpm.sort()
     rpm.add_alpha_keys()
     rpm.add_item("Fullscreen (on/off)", toggle_fullscreen_default )
-    rpm.add_item( "Enable Dev Console", None )
     rpm.add_item( "Back", None)
     cmd = rpm.query()
     cmd = True
