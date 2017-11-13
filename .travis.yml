@@ -24,6 +24,7 @@ script:
     - sed -i 's/set_mode( (0,0)/set_mode( (800, 600)/' game/__init__.py
     - python setup.py install
     # python main.py & PID=$! && python test_run.py && wait $PID
-    - python -m pytest tests.py -s
+    # python -m pytest tests.py -s
+    - coverage run tests.py
 after_success:
     - codecov
