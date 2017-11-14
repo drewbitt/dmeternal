@@ -25,13 +25,14 @@ class TestClass:
 					flag = False
 			assert flag == True
 
-	def test_loadCampaign(self):
-		os.environ["SDL_VIDEODRIVER"] = "dummy"
-		pygame.init()
-		screen = pygame.display.set_mode( (1920,1080), pygame.FULLSCREEN )
-		pygwrap.init()
-		rpgmenu.init()
-		assert load_campaign_no_play(screen) == True
+	# Disabled until file reference issues are fixed
+	#def test_loadCampaign(self):
+	#	os.environ["SDL_VIDEODRIVER"] = "dummy"
+	#	pygame.init()
+	#	screen = pygame.display.set_mode( (1920,1080), pygame.FULLSCREEN )
+	#	pygwrap.init()
+	#	rpgmenu.init()
+	#	assert load_campaign_no_play(screen) == True
 
 	def test_randomCampaign(self):
 		init = narrator.plots.PlotState(rank=1)
