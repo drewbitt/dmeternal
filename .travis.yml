@@ -27,6 +27,6 @@ script:
     # python main.py & PID=$! && python test_run.py && wait $PID
     # python -m pytest tests.py -s
     # coverage run tests.py
-    - py.test --cov=./ tests.py
+    - py.test --cov=./tests tests.py
 after_success:
     - codecov
