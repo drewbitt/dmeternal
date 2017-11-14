@@ -6,6 +6,7 @@ sys.path.append('../')
 from game.campaign import *
 from game import campaign
 from game import narrator
+from game import rpgmenu
 
 class TestClass:
     def test_randomCampaign(self):
