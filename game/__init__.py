@@ -21,6 +21,7 @@
 
 import cPickle
 import os
+import sys
 import random
 
 import pygame
@@ -136,14 +137,9 @@ def load_campaign( screen ):
             camp.play( screen )
 
 def load_campaign_no_play( screen ):
-	rpm = rpgmenu.Menu( screen,screen.get_width()//2-250,screen.get_height()//2-50,500,100,predraw=PosterRedraw(screen) )
-	rpm.add_files( util.user_dir("rpg_*.sav") )
-	rpm.sort()
-	rpm.add_alpha_keys()
-	rpm.add_item( "Cancel Load Campaign", None )
-	pygwrap.please_stand_by( screen, "Loading...") 
-	file = util.user_dir("rpg_test1.sav")
-	with open( file, "rb" ) as f:
+	__location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
+	file = 'rpg_test1.sav'
+	with open(os.path.join(__location__, file), "rb" ) as f:
 		camp = cPickle.load(f)
 	if camp:
 		return True
