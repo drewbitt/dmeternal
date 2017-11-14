@@ -9,7 +9,7 @@ from game import narrator
 from game import rpgmenu
 from game import characters
 from game.characters import *
-from game.__init__ import load_campaign_no_play
+#from game.__init__ import load_campaign_no_play
 
 class TestClass:
 	def test_characterGen(self):
