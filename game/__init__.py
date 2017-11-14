@@ -135,6 +135,21 @@ def load_campaign( screen ):
         if camp:
             camp.play( screen )
 
+def load_campaign_no_play( screen ):
+	rpm = rpgmenu.Menu( screen,screen.get_width()//2-250,screen.get_height()//2-50,500,100,predraw=PosterRedraw(screen) )
+	rpm.add_files( util.user_dir("rpg_*.sav") )
+	rpm.sort()
+	rpm.add_alpha_keys()
+	rpm.add_item( "Cancel Load Campaign", None )
+	pygwrap.please_stand_by( screen, "Loading...") 
+	file = util.user_dir("rpg_test1.sav")
+	with open( file, "rb" ) as f:
+		camp = cPickle.load(f)
+	if camp:
+		return True
+	else:
+		return False
+
 def test_campaign_generator( screen ):
     camp = campaign.Campaign()
     for t in range( 100 ):
