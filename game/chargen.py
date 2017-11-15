@@ -330,6 +330,8 @@ def make_character( screen ):
                 redraw.charsheet.regenerate_avatar()
 
 
+
+
     pc.levels.append( level(1,pc) )
     give_starting_equipment( pc )
     redraw.charsheet.regenerate_avatar()
