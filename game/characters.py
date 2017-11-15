@@ -1,17 +1,18 @@
 
-import stats
-import spells
+import cPickle
+import collections
 import random
-import image
-import items
+
+import aibrain
+import animobs
+import context
 import dialogue
 import effects
-import animobs
-import aibrain
-import collections
+import image
+import items
+import spells
+import stats
 import util
-import cPickle
-import context
 
 # Reaction score constants
 FRIENDLY_THRESHOLD = 25

@@ -6,12 +6,14 @@
 # Word wrapper taken from the PyGame wiki plus
 # the list-printer from Anne Archibald's GearHead Prime demo.
 
-import pygame
-from itertools import chain
-import image
-import util
 import glob
 import random
+from itertools import chain
+
+import pygame
+
+import image
+import util
 
 # Import the android module. If we can't import it, set it to None - this
 # lets us test it, and check to see if we want android-specific behavior.

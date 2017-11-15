@@ -25,7 +25,6 @@ import math
 import animobs
 
 
-
 def fieldOfView(startX, startY, mapWidth, mapHeight, radius, \
   fovthing ):
     """

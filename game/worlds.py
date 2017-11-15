@@ -1,6 +1,6 @@
-import context
-import container
 import random
+
+import container
 import maps
 
 W_VILLAGE = 0

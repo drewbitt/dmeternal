@@ -1,7 +1,7 @@
-import stats
-import image
-import effects
 import animobs
+import effects
+import image
+import stats
 
 # Enumerated constants for dispelling types.
 COMBAT, MAGIC, POISON, DAILY, CURSE = range( 5 )

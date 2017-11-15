@@ -1,4 +1,5 @@
 import re
+
 from characters import *
 
 # Regular expression to help pyconsole.Console recognize a custom function called through the developer console

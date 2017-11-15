@@ -19,24 +19,25 @@
 #       
 # 
 
-import narrator
-import context
-import maps
-import pygame
-import pygwrap
-import rpgmenu
-import campaign
-import util
 import cPickle
-import image
-import glob
+import os
+import sys
 import random
+
+import pygame
+
+import campaign
 import chargen
 import charloader
-import sys
-import os
+import context
+import image
+import maps
+import narrator
+import pygwrap
+import rpgmenu
+import util
 
-VERSION_ID = "0.5.0 Alpha"
+VERSION_ID = "0.6.0 Alpha"
 
 
 class PosterRedraw( object ):
@@ -109,7 +110,7 @@ def bardic_start_campaign( screen ):
 def endless_start_campaign( screen ):
     init = narrator.plots.PlotState(rank=1)
     pygwrap.please_stand_by( screen, "Building world..." )
-    nart = narrator.Narrative( campaign.Campaign(xp_scale=0.25), init, adv_type="STUB_ENDLESS" )
+    nart = narrator.Narrative( campaign.Campaign(xp_scale=0.65), init, adv_type="STUB_ENDLESS" )
     if nart.story:
         nart.build()
         camp = nart.camp
@@ -134,6 +135,17 @@ def load_campaign( screen ):
             camp = cPickle.load( f )
         if camp:
             camp.play( screen )
+
+# Disabled until file reference issues are fixed
+#def load_campaign_no_play( screen ):
+#	__location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
+#	file = 'rpg_test1.sav'
+#	with open(os.path.join(__location__, file), "rb" ) as f:
+#		camp = cPickle.load(f)
+#	if camp:
+#		return True
+#	else:
+#		return False
 
 def test_campaign_generator( screen ):
     camp = campaign.Campaign()
@@ -174,8 +186,6 @@ def load_settings( screen ):
     rpm.sort()
     rpm.add_alpha_keys()
     rpm.add_item("Fullscreen (on/off)", toggle_fullscreen_default )
-    rpm.add_item( "Enable Dev Console", None )
-    rpm.add_item( "Difficulty Settings", None)
     rpm.add_item( "Back", None)
     cmd = rpm.query()
     cmd = True
