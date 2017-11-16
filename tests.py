@@ -12,18 +12,18 @@ from game.characters import *
 #from game.__init__ import load_campaign_no_play
 
 class TestClass:
-	#def test_characterGen(self):
-	#	flag = True
-	#	init = narrator.plots.PlotState(rank=1)
-	#	nart = narrator.Narrative( campaign.Campaign(xp_scale=0.65), init, adv_type="STUB_ENDLESS" )
-	#	if nart.story:
-	#		nart.build()
-	#		camp = nart.camp
-	#		pcs = campaign.Random_party()
-	#		if camp.num_pcs() > 0:
-	#			if not camp.first_living_pc():
-	#				flag = False
-	#		assert flag == True
+	def test_characterGen(self):
+		flag = True
+		init = narrator.plots.PlotState(rank=1)
+		nart = narrator.Narrative( campaign.Campaign(xp_scale=0.65), init, adv_type="STUB_ENDLESS" )
+		if nart.story:
+			nart.build()
+			camp = nart.camp
+			pcs = campaign.Random_party()
+			if camp.num_pcs() > 0:
+				if not camp.first_living_pc():
+					flag = False
+			assert flag == True
 
 	# Disabled until file reference issues are fixed
 	#def test_loadCampaign(self):
