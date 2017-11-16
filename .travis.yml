@@ -7,26 +7,15 @@ before_install:
     - sudo apt-get update -qq
     - sudo apt-get build-dep -qq python-pygame
     - sudo apt-get install -qq mercurial
-    # xvfb used to install and use pyautogui
-    # sudo apt-get install -qq xvfb
-    # sudo Xvfb :1 -screen 0 800x600x16 &
-    # export DISPLAY=:1.0
 install:
     - pip install hg+http://bitbucket.org/pygame/pygame
     - pip install codecov
     - pip install pytest
     - pip install pytest-cov
-    # for pyautogui
-    # pip install pillow Image python-xlib
-    # pip install pyautogui
 script:
-    # - sed -i '/import charloader/a import os' game/__init__.py
     - sed -i '/def main():/a \   \ os.environ["SDL_VIDEODRIVER"] = "x11"' game/__init__.py
     - sed -i 's/set_mode( (0,0)/set_mode( (800, 600)/' game/__init__.py
     - python setup.py install
-    # python main.py & PID=$! && python test_run.py && wait $PID
-    # python -m pytest tests.py -s
-    # coverage run tests.py
     - py.test --cov=./ tests/tests.py
 after_success:
     - codecov
