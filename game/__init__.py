@@ -21,6 +21,7 @@
 
 import cPickle
 import os
+import sys
 import random
 
 import pygame
@@ -134,6 +135,17 @@ def load_campaign( screen ):
             camp = cPickle.load( f )
         if camp:
             camp.play( screen )
+
+# Disabled until file reference issues are fixed
+#def load_campaign_no_play( screen ):
+#	__location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
+#	file = 'rpg_test1.sav'
+#	with open(os.path.join(__location__, file), "rb" ) as f:
+#		camp = cPickle.load(f)
+#	if camp:
+#		return True
+#	else:
+#		return False
 
 def test_campaign_generator( screen ):
     camp = campaign.Campaign()

@@ -58,7 +58,7 @@ class ViewReDrawer( object ):
         self.counter = 0
         self.view = view
         self.style = style
-        self.camp = camp
+        self.camp = camp;
 
         if screen and not border_rect:
             border_rect = pygame.Rect( screen.get_width()//2 + 64, screen.get_height()//2 - ViewDrawer.HEIGHT//2 + 32, ViewDrawer.WIDTH - 64, ViewDrawer.HEIGHT )

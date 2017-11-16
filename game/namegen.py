@@ -212,5 +212,4 @@ if __name__=="__main__":
 #    myfile = open( "out.txt", "w" )
 #    for t in range( 500 ):
 #        myfile.write( G2.gen_word( True ) + "\n" )
-
 #    myfile.close()

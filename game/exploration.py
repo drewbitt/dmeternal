@@ -1,4 +1,5 @@
 import sys
+import sys
 
 import pygame
 
@@ -282,7 +283,6 @@ class Explorer( object ):
         x = screen.get_width() // 2 - (750 / 2)
         y = screen.get_height() // 2 - 400 // 2 + 32
         self.console = pyconsole.Console(self.screen, (x,y,750,400), self.camp, functions={"reset_health":reset_pc_health, "reset_mana":reset_pc_mana, "super_stats":super_stats_trigger, "mod_stat":mod_stat_trigger}, key_calls={"d":sys.exit}, syntax={re_function:console_func}) #Added self.camp.party reference.
-
 
         # Update the view of all party members.
         for pc in camp.party:
@@ -982,7 +982,7 @@ class Explorer( object ):
         mymenu.add_item("Change to normal", 2)
         mymenu.add_item("Change to hard", 3)
         mymenu.add_item("Change to endless", 4)
-        
+
         cmd = mymenu.query()
         if cmd == 1:
             self.camp.xp_scale = 1.3

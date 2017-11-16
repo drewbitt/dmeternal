@@ -336,11 +336,6 @@ def make_character( screen ):
     give_starting_equipment( pc )
     redraw.charsheet.regenerate_avatar()
 
-
-
-
-
-
     # Choose a name.
     redraw.caption = "Done!"
     name = pygwrap.input_string( screen, redrawer=redraw, prompt="Enter character name" )
