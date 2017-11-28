@@ -878,10 +878,6 @@ class Explorer( object ):
             self.scene.last_updated = self.camp.day
     def resize_screen(self):
         scrsize = width,height = 600,400
-        fullscreen_sz = pygame.display.Info().current_w, pygame.display.Info().current_h
-        win_pos_left = 1 + ((fullscreen_sz[0] - width) // 2)
-        win_pos_top = 1 + ((fullscreen_sz[1] - height) // 2)
-        os.environ['SDL_VIDEO_WINDOW_POS'] = '{0},{1}'.format(win_pos_left, win_pos_top) #reset enviroment varibles
 
         if util.config.getboolean( "DEFAULT", "fullscreen"): #checks fullscreen in config.cfg
             util.config.set( "DEFAULT", "fullscreen", "False") #changes fullscreen in config.cfg buffer

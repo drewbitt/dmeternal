@@ -1,23 +1,23 @@
 # -*- coding: utf-8 -*-
-#       
+#
 #       Copyright 2014 Joseph Hewitt <pyrrho12@yahoo.ca>
-#       
+#
 #       This program is free software; you can redistribute it and/or modify
 #       it under the terms of the GNU General Public License as published by
 #       the Free Software Foundation; either version 2 of the License, or
 #       (at your option) any later version.
-#       
+#
 #       This program is distributed in the hope that it will be useful,
 #       but WITHOUT ANY WARRANTY; without even the implied warranty of
 #       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #       GNU General Public License for more details.
-#       
+#
 #       You should have received a copy of the GNU General Public License
 #       along with this program; if not, write to the Free Software
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
-#       
-# 
+#
+#
 
 import cPickle
 import os
@@ -159,9 +159,10 @@ def test_campaign_generator( screen ):
             print "{} [{}]".format( p, p._used )
 
 
-def toggle_fullscreen_default( screen ):
+def toggle_fullscreen_default( screen, rpm ):
     scrsize = width,height = 600,400
     fullscreen_sz = pygame.display.Info().current_w, pygame.display.Info().current_h
+    x = pygame.display.Info().current_w
     win_pos_left = 1 + ((fullscreen_sz[0] - width) // 2)
     win_pos_top = 1 + ((fullscreen_sz[1] - height) // 2)
     os.environ['SDL_VIDEO_WINDOW_POS'] = '{0},{1}'.format(win_pos_left, win_pos_top) #reset enviroment varibles
@@ -169,9 +170,13 @@ def toggle_fullscreen_default( screen ):
     if util.config.getboolean( "DEFAULT", "fullscreen"): #checks fullscreen in config.cfg
         util.config.set( "DEFAULT", "fullscreen", "False") #changes fullscreen in config.cfg buffer
         pygame.display.set_mode((800,600)) #change current display flag
+        rpm.predraw(screen)
     else:
         util.config.set( "DEFAULT", "fullscreen", "True")
-        pygame.display.set_mode((800,600),pygame.FULLSCREEN)
+        pygame.display.set_mode((0,0),pygame.FULLSCREEN)
+        rpm.predraw(screen)
+
+
     #write changes in config.cfg to file
     with open( util.user_dir( "config.cfg" ) , "wb" ) as f:
         util.config.write( f )
@@ -192,9 +197,10 @@ def load_settings( screen ):
     while cmd:
         cmd = rpm.query()
         if cmd:
-            cmd( screen )
+            cmd( screen , rpm)
         if pygwrap.GOT_QUIT:
             break
+
 
 def main():
     pygame.init()
@@ -202,10 +208,10 @@ def main():
     pygame.display.set_icon(pygame.image.load(util.image_dir("sys_icon.png")))
     # Set the screen size.
     if util.config.getboolean( "DEFAULT", "fullscreen" ):
+        screen = pygame.display.set_mode( (800,600) )
         screen = pygame.display.set_mode( (0,0), pygame.FULLSCREEN )
     else:
         screen = pygame.display.set_mode( (800,600) )
-    pygwrap.init()
     rpgmenu.init()
 
     screen_center_x = screen.get_width() // 2
