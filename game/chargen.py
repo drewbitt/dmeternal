@@ -57,6 +57,7 @@ def choose_gender( screen, redraw ):
     for g in range( 3 ):
         rpm.add_item( stats.GENDER[g], g, "Gender has no effect on a character's abilities." )
     rpm.add_alpha_keys()
+    rpm.add_item("Cancel Creation", False)
     redraw.caption = "Select this character's gender."
     return rpm.query()
 
@@ -100,7 +101,8 @@ def choose_species( screen, predraw ):
         rpm.add_item( s.name, s )
     rpm.sort()
     rpm.add_alpha_keys()
-    rpm.add_item("Back", False)
+    rpm.add_item("Back", 0)
+    rpm.add_item("Cancel Creation", False)
     redraw.caption = "Select this character's species."
     query = rpm.query()
     return query
@@ -273,6 +275,11 @@ def make_character( screen ):
     # Get species.
     species = choose_species( screen , redraw )
 
+    while species is 0:
+        gender = choose_gender(screen , redraw )
+        species = choose_species( screen , redraw )
+        if not species or not gender:
+            return None
     if not species:
         return None
 
