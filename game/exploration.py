@@ -1,5 +1,4 @@
 import sys
-import sys
 
 import pygame
 
@@ -15,6 +14,7 @@ import rpgmenu
 import services
 import teams
 import util
+import os
 from consolecmd import *
 
 
@@ -952,6 +952,9 @@ class Explorer( object ):
         if choice:
             self.pc_use_technique( pc, choice, choice.exp_tar )
 
+    def pop_crafting_menu(self):
+        print("TEST")
+
     def pop_dev_console(self):
         self.console.set_active(True)
 
@@ -999,6 +1002,7 @@ class Explorer( object ):
         mymenu.add_item("Fullscreen (On/Off)", 444)
         mymenu.add_item("Change difficulty settings", 777)
         mymenu.add_item("Quit to Title Screen", 666)
+        mymenu.add_item("Crafting", 888)
         mymenu.add_item("Quit to Desktop", 555)  # dmeternal is meant to be able to run on Android but this obvi wouldn't work there
         f = mymenu.query()
         if f == 666:
@@ -1006,6 +1010,8 @@ class Explorer( object ):
             self.no_quit = False
         elif f == 777:
             self.pop_difficulty_settings()
+        elif f == 888:
+ 	        self.pop_crafting_menu()
         elif f == 555:
             self.camp.save(self.screen)
             self.no_quit = False
