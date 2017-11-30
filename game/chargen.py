@@ -330,6 +330,10 @@ def make_character( screen ):
             level = choose_level( screen, redraw, pc )
             if not level:
                 return None
+        if done == 4:
+            d = choose_appearance( screen, redraw, pc )
+            while d == 1:
+                level = choose_level( screen, redraw, pc )
 
             while level == 'change':
                 species = choose_species( screen , redraw )
