@@ -193,13 +193,9 @@ def load_settings( screen ):
     rpm.add_item("Fullscreen (on/off)", toggle_fullscreen_default )
     rpm.add_item( "Back", None)
     cmd = rpm.query()
-    cmd = True
-    while cmd:
-        cmd = rpm.query()
-        if cmd:
-            cmd( screen , rpm)
-        if pygwrap.GOT_QUIT:
-            break
+    if cmd:
+        cmd( screen, rpm )
+
 
 
 def main():
