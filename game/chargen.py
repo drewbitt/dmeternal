@@ -95,6 +95,7 @@ class ChooseSpeciesRedrawer( object ):
 def choose_species( screen, predraw ):
     """Return the species chosen by the player."""
     redraw = ChooseSpeciesRedrawer( predraw=predraw )
+    redraw.caption = "Select Species"
     rpm = charsheet.RightMenu( screen , predraw = redraw )
     redraw.menu = rpm
     for s in characters.PC_SPECIES:
@@ -103,7 +104,6 @@ def choose_species( screen, predraw ):
     rpm.add_alpha_keys()
     rpm.add_item("Back", 0)
     rpm.add_item("Cancel Creation", False)
-    redraw.caption = "Select this character's species."
     query = rpm.query()
     return query
 
@@ -270,13 +270,13 @@ def make_character( screen ):
     gender = choose_gender( screen , redraw )
     if gender is False:
         return None
-
-
+    redraw.caption = "Select this character's Race"
     # Get species.
     species = choose_species( screen , redraw )
 
     while species is 0:
         gender = choose_gender(screen , redraw )
+        redraw.caption = "Select this character's Race"
         species = choose_species( screen , redraw )
         if not species or not gender:
             return None
