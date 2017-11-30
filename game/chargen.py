@@ -95,6 +95,7 @@ class ChooseSpeciesRedrawer( object ):
 def choose_species( screen, predraw ):
     """Return the species chosen by the player."""
     redraw = ChooseSpeciesRedrawer( predraw=predraw )
+    redraw.caption = "Select Species"
     rpm = charsheet.RightMenu( screen , predraw = redraw )
     redraw.menu = rpm
     for s in characters.PC_SPECIES:
@@ -103,7 +104,6 @@ def choose_species( screen, predraw ):
     rpm.add_alpha_keys()
     rpm.add_item("Back", 0)
     rpm.add_item("Cancel Creation", False)
-    redraw.caption = "Select this character's species."
     query = rpm.query()
     return query
 
@@ -166,7 +166,7 @@ def choose_level( screen, predraw, pc ):
         rpm.add_alpha_keys()
         rpm.add_item( "Reroll Stats", -1 )
         rpm.set_item_by_value( -1 )
-        rpm.add_item("Change Race", 'change')
+        rpm.add_item("Back", 'change')
 
         l = rpm.query()
 
@@ -270,13 +270,13 @@ def make_character( screen ):
     gender = choose_gender( screen , redraw )
     if gender is False:
         return None
-
-
+    redraw.caption = "Select this character's Race"
     # Get species.
     species = choose_species( screen , redraw )
 
     while species is 0:
         gender = choose_gender(screen , redraw )
+        redraw.caption = "Select this character's Race"
         species = choose_species( screen , redraw )
         if not species or not gender:
             return None
@@ -296,7 +296,13 @@ def make_character( screen ):
         return None
 
     while level == 'change':
-        species = choose_species( screen , redraw )
+        temp = choose_species( screen , redraw )
+        while temp is 0:
+            gender = choose_gender(screen , redraw)
+            pc = characters.Character( species = species(), gender = gender )
+            redraw.charsheet = charsheet.CharacterSheet( pc , screen = screen )
+            temp = choose_species( screen , redraw )
+        species = temp
         pc = characters.Character( species = species(), gender = gender )
         redraw.charsheet = charsheet.CharacterSheet( pc , screen = screen )
         level = choose_level( screen, redraw, pc )
@@ -308,7 +314,7 @@ def make_character( screen ):
 
     # Customize appearance.
     d = choose_appearance( screen, redraw, pc )
-    while d == 'change':
+    while d == 1:
         level = choose_level( screen, redraw, pc )
 
 
@@ -330,6 +336,10 @@ def make_character( screen ):
             level = choose_level( screen, redraw, pc )
             if not level:
                 return None
+        if done == 4:
+            d = choose_appearance( screen, redraw, pc )
+            while d == 1:
+                level = choose_level( screen, redraw, pc )
 
             while level == 'change':
                 species = choose_species( screen , redraw )

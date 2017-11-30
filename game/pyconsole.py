@@ -162,8 +162,9 @@ class Console:
         
         self.add_func_calls({"echo":self.output, "clear":self.clear, "help":self.help})
         self.add_func_calls(functions)
-        
-        self.add_key_calls({"l":self.clear, "c":self.clear_input, "w":self.set_active})
+
+        # ctrl+key features. no reason to confuse users.
+        # self.add_key_calls({"l":self.clear, "c":self.clear_input, "w":self.set_active})
         self.add_key_calls(key_calls)
         
 
