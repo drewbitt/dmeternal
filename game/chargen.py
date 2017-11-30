@@ -308,7 +308,7 @@ def make_character( screen ):
 
     # Customize appearance.
     d = choose_appearance( screen, redraw, pc )
-    while d == 'change':
+    while d == 1:
         level = choose_level( screen, redraw, pc )
 
 
