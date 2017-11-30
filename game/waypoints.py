@@ -391,11 +391,13 @@ class BookOfHeroes( Waypoint ):
     caption = "Book of Heroes"
     def add_members( self, camp, screen, predraw ):
         charloader.load_characters( camp.party, screen, predraw )
+        ''' # had infinite loop with this code when adding more than 1 character in book of hereos - came from original version
         if camp.party:
             camp.remove_party_from_scene()
             camp.entrance = self
             camp.place_party()
             camp.update_library()
+        '''
     def remove_members( self, camp, screen, predraw ):
         charsheets = dict()
         for pc in camp.party:
