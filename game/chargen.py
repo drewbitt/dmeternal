@@ -166,7 +166,7 @@ def choose_level( screen, predraw, pc ):
         rpm.add_alpha_keys()
         rpm.add_item( "Reroll Stats", -1 )
         rpm.set_item_by_value( -1 )
-        rpm.add_item("Change Race", 'change')
+        rpm.add_item("Back", 'change')
 
         l = rpm.query()
 
@@ -296,7 +296,13 @@ def make_character( screen ):
         return None
 
     while level == 'change':
-        species = choose_species( screen , redraw )
+        temp = choose_species( screen , redraw )
+        while temp is 0:
+            gender = choose_gender(screen , redraw)
+            pc = characters.Character( species = species(), gender = gender )
+            redraw.charsheet = charsheet.CharacterSheet( pc , screen = screen )
+            temp = choose_species( screen , redraw )
+        species = temp
         pc = characters.Character( species = species(), gender = gender )
         redraw.charsheet = charsheet.CharacterSheet( pc , screen = screen )
         level = choose_level( screen, redraw, pc )
