@@ -217,14 +217,14 @@ def choose_appearance( screen, redraw, pc ):
 
     rpm.add_item( "Change hat" , 4 )
 
-    rpm.add_item( "Finished" , False )
-    rpm.add_item( "Change Race" , 'change')
+    rpm.add_item( "Finalize Character" , False )
 
     while not done:
         l = rpm.query()
 
         if l is False:
             done = True
+            return 1
         elif l == 1:
             pc.species.alter_skin_color()
             redraw.charsheet.regenerate_avatar()
@@ -237,7 +237,7 @@ def choose_appearance( screen, redraw, pc ):
         elif l == 4:
             alter_hat( pc )
             redraw.charsheet.regenerate_avatar()
-        elif l == 'change':
+        elif l == '0':
             return l
 
 
@@ -314,10 +314,6 @@ def make_character( screen ):
 
     # Customize appearance.
     d = choose_appearance( screen, redraw, pc )
-    while d == 1:
-        level = choose_level( screen, redraw, pc )
-
-
 
     done = 1
     while done != 0:
