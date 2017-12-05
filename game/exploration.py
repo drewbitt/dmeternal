@@ -665,7 +665,7 @@ class Explorer( object ):
             mymenu.add_item( "Use Item", self.use_item )
         if hasattr( it, "spell" ) and not self.camp.library_has_spell( it.spell ):
             mymenu.add_item( "Learn Spell", self.learn_spell_from_item )
-        mymenu.add_item( "Trade Item", self.trade_item )
+        mymenu.add_item( "Trade Item", "trade" )
         mymenu.add_item( "Drop Item", self.drop_item )
         mymenu.add_item( "Exit", False )
         mymenu.add_alpha_keys()
@@ -673,7 +673,11 @@ class Explorer( object ):
         n = mymenu.query()
 
         if n:
-            result = n( it, pc, myredraw )
+            # fix for trading since that method wants myredraw while the other options don't
+            if n == "trade":
+                result = self.trade_item(it, pc, myredraw)
+            else:
+                result = n( it, pc )
             myredraw.csheet.regenerate_avatar()
             self.view.regenerate_avatars( self.camp.party )
             return result
