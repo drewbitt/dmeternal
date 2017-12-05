@@ -39,6 +39,8 @@ class ViewDrawer ( pygame.Rect ):
         pygwrap.default_border.render( screen , self )
         if style == "difficulty":
             self.just_print_example(screen, self.x + 6, self.y + 25, "Current difficulty:", camp.get_difficulty(camp.xp_scale))
+        elif style == "crafting":
+            self.just_print_example(screen, self.x + 6, self.y + 25, "Current Crafting Bits: ", str(camp.get_craftbits()))
 
         '''if style == "s":
             # Display things for settings menu

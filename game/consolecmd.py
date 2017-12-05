@@ -20,6 +20,17 @@ def console_func(console, match):
     else:
         console.output(out)
 
+def kill_party(party):
+    '''\
+        Kills all members of your party. Seriously!? Why would you!?
+        (This is primarily for crash debug use.)
+        Arguments:
+            party -- a reference to the party of he current campaign
+              | - kill_party(party) - Example of how to call command
+    '''
+    for pc in party:
+        pc.hp_damage = pc.current_hp()
+
 def reset_pc_health(party):
     '''\
         Restore the health of all party members
