@@ -1,5 +1,6 @@
 # Pathfinding algorithm.
-
+import pygame
+import random
 
 class HotTile( object ):
     def __init__( self ):
@@ -162,9 +163,6 @@ class MoveMap( HotMap ):
 if __name__=='__main__':
     import timeit
     import maps
-    import random
-    import pygame
-
 
     myscene = maps.Scene( 100 , 100 )
     for x in range( 5, myscene.width ):
@@ -195,6 +193,3 @@ if __name__=='__main__':
 
     print t1.timeit(100)
     print t2.timeit(100)
-
-
-

@@ -1,5 +1,4 @@
 import sys
-import sys
 
 import pygame
 
@@ -15,6 +14,7 @@ import rpgmenu
 import services
 import teams
 import util
+import os
 from consolecmd import *
 
 
@@ -282,7 +282,7 @@ class Explorer( object ):
 
         x = screen.get_width() // 2 - (750 / 2)
         y = screen.get_height() // 2 - 400 // 2 + 32
-        self.console = pyconsole.Console(self.screen, (x,y,750,400), self.camp, functions={"reset_health":reset_pc_health, "reset_mana":reset_pc_mana, "super_stats":super_stats_trigger, "mod_stat":mod_stat_trigger}, key_calls={"d":sys.exit}, syntax={re_function:console_func}) #Added self.camp.party reference.
+        self.console = pyconsole.Console(self.screen, (x,y,750,400), self.camp, functions={"kill_party":kill_party, "reset_health":reset_pc_health, "reset_mana":reset_pc_mana, "super_stats":super_stats_trigger, "mod_stat":mod_stat_trigger}, syntax={re_function:console_func}) #Added self.camp.party reference.
 
         # Update the view of all party members.
         for pc in camp.party:
@@ -665,7 +665,7 @@ class Explorer( object ):
             mymenu.add_item( "Use Item", self.use_item )
         if hasattr( it, "spell" ) and not self.camp.library_has_spell( it.spell ):
             mymenu.add_item( "Learn Spell", self.learn_spell_from_item )
-        mymenu.add_item( "Trade Item", self.trade_item )
+        mymenu.add_item( "Trade Item", "trade" )
         mymenu.add_item( "Drop Item", self.drop_item )
         mymenu.add_item( "Exit", False )
         mymenu.add_alpha_keys()
@@ -673,7 +673,11 @@ class Explorer( object ):
         n = mymenu.query()
 
         if n:
-            result = n( it, pc, myredraw )
+            # fix for trading since that method wants myredraw while the other options don't
+            if n == "trade":
+                result = self.trade_item(it, pc, myredraw)
+            else:
+                result = n( it, pc )
             myredraw.csheet.regenerate_avatar()
             self.view.regenerate_avatars( self.camp.party )
             return result
@@ -878,10 +882,6 @@ class Explorer( object ):
             self.scene.last_updated = self.camp.day
     def resize_screen(self):
         scrsize = width,height = 600,400
-        fullscreen_sz = pygame.display.Info().current_w, pygame.display.Info().current_h
-        win_pos_left = 1 + ((fullscreen_sz[0] - width) // 2)
-        win_pos_top = 1 + ((fullscreen_sz[1] - height) // 2)
-        os.environ['SDL_VIDEO_WINDOW_POS'] = '{0},{1}'.format(win_pos_left, win_pos_top) #reset enviroment varibles
 
         if util.config.getboolean( "DEFAULT", "fullscreen"): #checks fullscreen in config.cfg
             util.config.set( "DEFAULT", "fullscreen", "False") #changes fullscreen in config.cfg buffer
@@ -956,6 +956,94 @@ class Explorer( object ):
         if choice:
             self.pc_use_technique( pc, choice, choice.exp_tar )
 
+    def dist_crafting_items(self, reqBits, item):
+        pc = self.camp.first_living_pc()
+        if pc and self.camp.craftbits >= reqBits:
+            pc.contents.append(item)
+            self.camp.craftbits -= reqBits
+
+    def pop_crafting_menu(self):
+        myredraw = bigmenu.ViewReDrawer(view=bigmenu.ViewDrawer(screen=self.screen),
+                                        screen=self.screen, predraw=self.view, caption="Crafting Menu", style="crafting", camp=self.camp)
+        mymenu = bigmenu.ActualMenu(self.screen, fontSize=15, predraw=myredraw)
+        mymenu.add_item("A selection of basic items for you to craft!", False)
+        mymenu.add_item("---------------------------", False)
+        mymenu.add_item("Cost |  Potions", False)
+        mymenu.add_item("-----|---------------------", False)
+        mymenu.add_item("100  |  Health Potion", 1)
+        mymenu.add_item("100  |  Mana Potion", 2)
+        mymenu.add_item("250  |  Cure Poison Potion", 3)
+        mymenu.add_item("---------------------------", False)
+        mymenu.add_item("Cost |  Scrolls", False)
+        mymenu.add_item("-----|---------------------", False)
+        mymenu.add_item("150  |  Random Rank 1 Scroll", 4)
+        mymenu.add_item("250  |  Random Rank 2 Scroll", 5)
+        mymenu.add_item("350  |  Random Rank 3 Scroll", 6)
+        mymenu.add_item("450  |  Random Rank 4 Scroll", 7)
+        mymenu.add_item("550  |  Random Rank 5 Scroll", 8)
+        mymenu.add_item("---------------------------", False)
+        mymenu.add_item("Cost |  Armor", False)
+        mymenu.add_item("-----|---------------------", False)
+        mymenu.add_item("750  |  Full Plate Armor", 9)
+        mymenu.add_item("750  |  Scale Mail", 10)
+        mymenu.add_item("750  |  Padded Robe", 11)
+        mymenu.add_item("---------------------------", False)
+        mymenu.add_item("Cost |  Weapons", False)
+        mymenu.add_item("-----|---------------------", False)
+        mymenu.add_item("300  |  Broadsword", 12)
+        mymenu.add_item("300  |  Kite Shield", 13)
+        mymenu.add_item("300  |  Composite Shortbow", 14)
+        mymenu.add_item("300  |  Fire Wand", 15)
+        mymenu.add_item("---------------------------", False)
+
+
+        cmd = mymenu.query()
+        if cmd == 1:
+            item = items.potions.PotionOfHealing()
+            self.dist_crafting_items(100, item)
+        elif cmd == 2:
+            item = items.potions.PotionOfMana()
+            self.dist_crafting_items(100, item)
+        elif cmd == 3:
+            item = items.potions.PotionOfCurePoison()
+            self.dist_crafting_items(250, item)
+        elif cmd == 4:
+            item = items.scrolls.Rank1Scroll()
+            self.dist_crafting_items(150, item)
+        elif cmd == 5:
+            item = items.scrolls.Rank2Scroll()
+            self.dist_crafting_items(250, item)
+        elif cmd == 6:
+            item = items.scrolls.Rank3Scroll()
+            self.dist_crafting_items(350, item)
+        elif cmd == 7:
+            item = items.scrolls.Rank4Scroll()
+            self.dist_crafting_items(450, item)
+        elif cmd == 8:
+            item = items.scrolls.Rank5Scroll()
+            self.dist_crafting_items(550, item)
+        elif cmd == 9:
+            item = items.heavyarmor.FullPlate()
+            self.dist_crafting_items(750, item)
+        elif cmd == 10:
+            item = items.lightarmor.ScaleMail()
+            self.dist_crafting_items(750, item)
+        elif cmd == 11:
+            item = items.lightarmor.PaddedRobe()
+            self.dist_crafting_items(750, item)
+        elif cmd == 12:
+            item = items.swords.Broadsword()
+            self.dist_crafting_items(300, item)
+        elif cmd == 13:
+            item = items.shields.KiteShield()
+            self.dist_crafting_items(300, item)
+        elif cmd == 14:
+            item = items.bows.CompositeShortbow()
+            self.dist_crafting_items(300, item)
+        elif cmd == 15:
+            item = items.wands.FireWand()
+            self.dist_crafting_items(300, item)
+
     def pop_dev_console(self):
         self.console.set_active(True)
 
@@ -1003,6 +1091,7 @@ class Explorer( object ):
         mymenu.add_item("Fullscreen (On/Off)", 444)
         mymenu.add_item("Change difficulty settings", 777)
         mymenu.add_item("Quit to Title Screen", 666)
+        mymenu.add_item("Crafting", 888)
         mymenu.add_item("Quit to Desktop", 555)  # dmeternal is meant to be able to run on Android but this obvi wouldn't work there
         f = mymenu.query()
         if f == 666:
@@ -1010,6 +1099,8 @@ class Explorer( object ):
             self.no_quit = False
         elif f == 777:
             self.pop_difficulty_settings()
+        elif f == 888:
+ 	        self.pop_crafting_menu()
         elif f == 555:
             self.camp.save(self.screen)
             self.no_quit = False

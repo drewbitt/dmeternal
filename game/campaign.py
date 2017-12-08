@@ -56,6 +56,21 @@ class Campaign( object ):
         self.gold = 300
         self.day = 1
         self.xp_scale = xp_scale
+        self.craftbits = 100000
+
+    def get_craftbits(self):
+        return self.craftbits
+
+    def get_difficulty(self, xp_scale):
+        self.xp_scale = xp_scale
+        if(xp_scale == 1.3):
+            return "easy"
+        elif (xp_scale == 0.65):
+            return "normal"
+        elif (xp_scale == 0.35):
+            return "hard"
+        else:
+            return "endless"
 
     def get_difficulty(self, xp_scale):
         self.xp_scale = xp_scale

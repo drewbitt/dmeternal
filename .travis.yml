@@ -16,6 +16,6 @@ script:
     - sed -i '/def main():/a \   \ os.environ["SDL_VIDEODRIVER"] = "x11"' game/__init__.py
     - sed -i 's/set_mode( (0,0)/set_mode( (800, 600)/' game/__init__.py
     - python setup.py install
-    - py.test --cov=./ tests/tests.py
+    - py.test --cov=./ tests.py
 after_success:
     - codecov
